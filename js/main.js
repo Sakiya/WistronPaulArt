@@ -22,7 +22,7 @@
      */
     const workSyncConfig = {
         // 作品 1：3 個節點（3 個 slides）
-        // 音檔總時長：中文約 2:00，英文約 2:10
+        // 音檔總時長：中文約 2:00，英文約 2:54
         1: {
             zh: [
                 { time: 0, slideIndex: 0 },
@@ -31,8 +31,8 @@
             ],
             en: [
                 { time: 0, slideIndex: 0 },
-                { time: 65, slideIndex: 1 },
-                { time: 130, slideIndex: 2 }
+                { time: 60, slideIndex: 1 },
+                { time: 120, slideIndex: 2 }
             ]
         },
 
@@ -723,14 +723,14 @@
             }
             return;
         }
-        
+
         // 其他錯誤才顯示警告
         if (context) {
             console.warn(`[${context}] 自動播放失敗:`, err);
         } else {
             console.warn('自動播放失敗:', err);
         }
-        
+
         if (onError && typeof onError === 'function') {
             onError();
         }
@@ -1374,7 +1374,7 @@
                                     // 播放成功後更新圖示
                                     setupAudioPlayerIcon(player);
                                 }).catch(function (err) {
-                                    handleAutoplayError(err, 'AudioGuide', function() {
+                                    handleAutoplayError(err, 'AudioGuide', function () {
                                         // 播放失敗後也要更新圖示
                                         setupAudioPlayerIcon(player);
                                     });
@@ -1400,7 +1400,7 @@
                                         // 播放成功後更新圖示
                                         setupAudioPlayerIcon(player);
                                     }).catch(function (err) {
-                                        handleAutoplayError(err, 'AudioGuide', function() {
+                                        handleAutoplayError(err, 'AudioGuide', function () {
                                             // 播放失敗後也要更新圖示
                                             setupAudioPlayerIcon(player);
                                         });
@@ -2935,7 +2935,7 @@
             expectedBehavior: isPaused ? '顯示播放圖示（三角形，讓用戶點擊播放）' : '顯示暫停圖示（兩條線，讓用戶點擊暫停）'
         });
         const needsReplace = playIcon && playIcon.src && !playIcon.src.includes(iconSrc.split('/').pop());
-        
+
         if (!playIcon || needsReplace) {
             console.log('[Icon] 創建/替換圖示元素', {
                 playIconExists: !!playIcon,
@@ -2943,12 +2943,12 @@
                 currentSrc: playIcon ? playIcon.src : 'N/A',
                 newSrc: iconSrc
             });
-            
+
             // 如果存在舊圖示，先移除
             if (playIcon) {
                 playIcon.remove();
             }
-            
+
             // 移除所有預設內容和樣式（只在第一次設置時）
             if (!playButton.querySelector('.custom-play-icon')) {
                 playButton.innerHTML = '';
@@ -2989,32 +2989,32 @@
             // 獲取當前 URL 的基礎路徑
             const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/');
             const oldSrcRelative = oldSrc.replace(baseUrl, '').replace(/^\/+/, '');
-            
+
             // 檢查是否需要更新
             const needsUpdate = !oldSrc.includes(iconSrc.split('/').pop());
-            
+
             if (needsUpdate) {
                 console.log('[Icon] 需要更新圖示，強制刷新', {
                     oldSrc: oldSrc,
                     newSrc: iconSrc
                 });
-                
+
                 // 方法1: 先移除圖示，強制瀏覽器重新載入
                 playIcon.style.display = 'none';
                 playIcon.src = ''; // 先清空
-                
+
                 // 使用 requestAnimationFrame 確保 DOM 更新
                 requestAnimationFrame(() => {
                     // 設置新的圖示路徑（添加時間戳避免緩存）
                     const timestamp = new Date().getTime();
                     playIcon.src = iconSrc + '?v=' + timestamp;
                     playIcon.setAttribute('src', iconSrc + '?v=' + timestamp);
-                    
+
                     // 強制重新顯示
                     playIcon.style.display = 'block';
                     playIcon.style.visibility = 'visible';
                     playIcon.style.opacity = '1';
-                    
+
                     console.log('[Icon] 圖示已強制刷新', {
                         newSrc: iconSrc + '?v=' + timestamp,
                         display: playIcon.style.display,
@@ -3026,7 +3026,7 @@
                 playIcon.src = iconSrc;
                 playIcon.setAttribute('src', iconSrc);
             }
-            
+
             // 驗證圖示是否正確設置
             setTimeout(() => {
                 const actualSrc = playIcon.src;
@@ -3157,13 +3157,13 @@
             }
 
             // 確保自定義圖示已設置和事件監聽器已綁定
-            const setupIconAndEvents = function(player) {
+            const setupIconAndEvents = function (player) {
                 setupAudioPlayerIcon(player);
-                
+
                 // 綁定播放狀態變化事件監聽器（參考正常初始化流程）
                 player.off('play', updateAudioPlayerIcon);
                 player.off('pause', updateAudioPlayerIcon);
-                
+
                 function updateAudioPlayerIcon(event) {
                     const paused = player.paused();
                     console.log('[AudioGuide] ========== 播放狀態變化事件觸發（播放器已存在）==========', {
@@ -3172,7 +3172,7 @@
                         readyState: player.readyState(),
                         timestamp: new Date().toISOString()
                     });
-                    
+
                     // 直接更新圖示（參考作品播放器的實現方式）
                     const playButton = player.controlBar.playToggle.el();
                     if (playButton) {
@@ -3181,21 +3181,21 @@
                             // 邏輯：暫停時顯示播放圖示，播放時顯示暫停圖示
                             const iconSrc = paused ? 'images/icon-play.svg' : 'images/icon-stop.svg';
                             const oldSrc = playIcon.src;
-                            
+
                             console.log('[AudioGuide] 直接更新圖示（播放器已存在）', {
                                 paused: paused,
                                 oldSrc: oldSrc,
                                 newSrc: iconSrc,
                                 willChange: !oldSrc.includes(iconSrc.split('/').pop())
                             });
-                            
+
                             // 強制更新圖示（使用時間戳避免緩存）
                             if (!oldSrc.includes(iconSrc.split('/').pop())) {
                                 const timestamp = new Date().getTime();
                                 playIcon.src = iconSrc + '?v=' + timestamp;
                                 playIcon.setAttribute('src', iconSrc + '?v=' + timestamp);
                                 playIcon.alt = paused ? '播放' : '暫停';
-                                
+
                                 console.log('[AudioGuide] 圖示已更新（播放器已存在）', {
                                     newSrc: iconSrc + '?v=' + timestamp,
                                     alt: playIcon.alt,
@@ -3211,10 +3211,10 @@
                         setupAudioPlayerIcon(player);
                     }
                 }
-                
+
                 player.on('play', updateAudioPlayerIcon);
                 player.on('pause', updateAudioPlayerIcon);
-                
+
                 console.log('[AudioGuide] ========== 播放狀態事件監聽器已綁定（播放器已存在）==========', {
                     hasPlayListener: true,
                     hasPauseListener: true,
@@ -3223,7 +3223,7 @@
                     currentPaused: player.paused()
                 });
             };
-            
+
             if (existingPlayer.readyState() >= 1) {
                 // 播放器已就緒，立即設置
                 setupIconAndEvents(existingPlayer);
@@ -3284,7 +3284,7 @@
                                 // 播放成功後更新圖示
                                 setupAudioPlayerIcon(existingPlayer);
                             }).catch(function (err) {
-                                handleAutoplayError(err, 'AudioGuide', function() {
+                                handleAutoplayError(err, 'AudioGuide', function () {
                                     // 播放失敗後也要更新圖示
                                     setupAudioPlayerIcon(existingPlayer);
                                 });
@@ -3310,7 +3310,7 @@
                                     // 播放成功後更新圖示
                                     setupAudioPlayerIcon(existingPlayer);
                                 }).catch(function (err) {
-                                    handleAutoplayError(err, 'AudioGuide', function() {
+                                    handleAutoplayError(err, 'AudioGuide', function () {
                                         // 播放失敗後也要更新圖示
                                         setupAudioPlayerIcon(existingPlayer);
                                     });
@@ -3348,7 +3348,7 @@
                             console.log('[AudioGuide] 頁面載入時播放成功（播放器已存在）');
                             setupAudioPlayerIcon(existingPlayer);
                         }).catch(function (err) {
-                            handleAutoplayError(err, 'AudioGuide', function() {
+                            handleAutoplayError(err, 'AudioGuide', function () {
                                 setupAudioPlayerIcon(existingPlayer);
                             });
                         });
@@ -3358,7 +3358,7 @@
                                 console.log('[AudioGuide] 頁面載入時播放成功（播放器已存在，等待載入）');
                                 setupAudioPlayerIcon(existingPlayer);
                             }).catch(function (err) {
-                                handleAutoplayError(err, 'AudioGuide', function() {
+                                handleAutoplayError(err, 'AudioGuide', function () {
                                     setupAudioPlayerIcon(existingPlayer);
                                 });
                             });
@@ -3504,7 +3504,7 @@
                             // 播放成功後更新圖示
                             setupAudioPlayerIcon(player);
                         }).catch(function (err) {
-                            handleAutoplayError(err, 'AudioGuide', function() {
+                            handleAutoplayError(err, 'AudioGuide', function () {
                                 // 播放失敗後也要更新圖示
                                 setupAudioPlayerIcon(player);
                             });
@@ -3522,7 +3522,7 @@
                                     // 播放成功後更新圖示
                                     setupAudioPlayerIcon(player);
                                 }).catch(function (err) {
-                                    handleAutoplayError(err, 'AudioGuide', function() {
+                                    handleAutoplayError(err, 'AudioGuide', function () {
                                         // 播放失敗後也要更新圖示
                                         setupAudioPlayerIcon(player);
                                     });
@@ -3588,7 +3588,7 @@
                 controlBarElExists: !!controlBarEl,
                 controlBarEl: controlBarEl
             });
-            
+
             if (controlBarEl) {
                 // 移除舊的事件監聽器（如果有的話）
                 controlBarEl.removeEventListener('click', arguments.callee);
@@ -3635,7 +3635,7 @@
                             wasPaused: wasPaused,
                             readyState: player.readyState()
                         });
-                        
+
                         if (wasPaused) {
                             if (player.readyState() >= 2) {
                                 player.play().then(() => {
@@ -3665,7 +3665,7 @@
                         }
                     }
                 };
-                
+
                 controlBarEl.addEventListener('click', clickHandler, true); // 使用 capture 階段確保優先執行
                 console.log('[AudioGuide] 控制欄點擊事件監聽器已綁定', {
                     hasCapture: true,
@@ -3678,7 +3678,7 @@
                     playButtonExists: !!playButton,
                     playButton: playButton
                 });
-                
+
                 if (playButton) {
                     const directClickHandler = function (e) {
                         console.log('[AudioGuide] 播放按鈕直接點擊事件觸發', {
@@ -3692,7 +3692,7 @@
                             wasPaused: wasPaused,
                             readyState: player.readyState()
                         });
-                        
+
                         if (wasPaused) {
                             if (player.readyState() >= 2) {
                                 player.play().then(() => {
@@ -3721,7 +3721,7 @@
                             }, 50);
                         }
                     };
-                    
+
                     playButton.addEventListener('click', directClickHandler, true);
                     console.log('[AudioGuide] 播放按鈕直接點擊事件監聽器已綁定', {
                         hasCapture: true,
@@ -3749,7 +3749,7 @@
             // 先移除舊的事件監聽器，避免重複綁定
             player.off('play', updateAudioPlayerIcon);
             player.off('pause', updateAudioPlayerIcon);
-            
+
             function updateAudioPlayerIcon(event) {
                 const paused = player.paused();
                 console.log('[AudioGuide] ========== 播放狀態變化事件觸發 ==========', {
@@ -3758,7 +3758,7 @@
                     readyState: player.readyState(),
                     timestamp: new Date().toISOString()
                 });
-                
+
                 // 直接更新圖示（參考作品播放器的實現方式）
                 const playButton = player.controlBar.playToggle.el();
                 if (playButton) {
@@ -3767,21 +3767,21 @@
                         // 邏輯：暫停時顯示播放圖示，播放時顯示暫停圖示
                         const iconSrc = paused ? 'images/icon-play.svg' : 'images/icon-stop.svg';
                         const oldSrc = playIcon.src;
-                        
+
                         console.log('[AudioGuide] 直接更新圖示', {
                             paused: paused,
                             oldSrc: oldSrc,
                             newSrc: iconSrc,
                             willChange: !oldSrc.includes(iconSrc.split('/').pop())
                         });
-                        
+
                         // 強制更新圖示（使用時間戳避免緩存）
                         if (!oldSrc.includes(iconSrc.split('/').pop())) {
                             const timestamp = new Date().getTime();
                             playIcon.src = iconSrc + '?v=' + timestamp;
                             playIcon.setAttribute('src', iconSrc + '?v=' + timestamp);
                             playIcon.alt = paused ? '播放' : '暫停';
-                            
+
                             console.log('[AudioGuide] 圖示已更新', {
                                 newSrc: iconSrc + '?v=' + timestamp,
                                 alt: playIcon.alt,
@@ -3809,7 +3809,7 @@
                     controlBar.el().style.visibility = 'visible';
                     player.userActive(true);
                 }
-                
+
                 // 驗證圖示是否正確更新
                 setTimeout(() => {
                     const verifyButton = player.controlBar.playToggle.el();
@@ -3830,7 +3830,7 @@
             // 綁定事件監聽器
             player.on('play', updateAudioPlayerIcon);
             player.on('pause', updateAudioPlayerIcon);
-            
+
             console.log('[AudioGuide] ========== 播放狀態事件監聽器已綁定 ==========', {
                 hasPlayListener: true,
                 hasPauseListener: true,
@@ -3838,7 +3838,7 @@
                 playerReady: player.readyState(),
                 currentPaused: player.paused()
             });
-            
+
             // 測試：手動觸發一次更新，確保函數可以正常調用
             setTimeout(() => {
                 console.log('[AudioGuide] 測試：手動調用 updateAudioPlayerIcon');
@@ -3903,7 +3903,7 @@
                             console.log('[AudioGuide] 頁面載入時自動播放成功（canplaythrough）');
                             setupAudioPlayerIcon(player);
                         }).catch(function (err) {
-                            handleAutoplayError(err, 'AudioGuide', function() {
+                            handleAutoplayError(err, 'AudioGuide', function () {
                                 setupAudioPlayerIcon(player);
                             });
                         });
