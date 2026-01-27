@@ -1,0 +1,25 @@
+﻿/**
+*
+* gradient
+*
+**/
+// @include gradient(#07c, #f0f, vertical);
+// @include gradient(#07c, #f0f, horizontal);
+// @include gradient(#07c, #f0f, center);
+@mixin gradient($start-color, $end-color, $orientation) {
+    background: $start-color;
+    @if $orientation == 'vertical' {
+        background: -moz-linear-gradient(top, $start-color 0%, $end-color 100%);
+        background: -webkit-linear-gradient(top, $start-color 0%,$end-color 100%);
+        background: linear-gradient(to bottom, $start-color 0%,$end-color 100%);
+    } @else if $orientation == 'horizontal' {
+        background: -moz-linear-gradient(left, $start-color 0%, $end-color 100%);
+        background: -webkit-linear-gradient(left, $start-color 0%,$end-color 100%);
+        background: linear-gradient(to right, $start-color 0%,$end-color 100%);
+    } @else if $orientation == 'center' {
+        background: -moz-radial-gradient(center, ellipse cover, $start-color 0%, $end-color 100%);
+        background: -webkit-radial-gradient(center, ellipse cover, $start-color 0%,$end-color 100%);
+        background: radial-gradient(ellipse at center, $start-color 0%,$end-color 100%);
+    }
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{ie-hex-str($start-color)}', endColorstr='#{ie-hex-str($end-color)}');
+}

@@ -1,0 +1,25 @@
+﻿/** utils **/
+@import "utils/mixins";
+
+/** themes **/
+@import "themes/themes";
+
+/** base **/
+@import "base/resets";
+@import "base/base";
+
+/** components **/
+// @import "components/button";
+
+/** layout **/
+@import "layout/footer";
+@import "layout/header";
+
+/** pages **/
+@import "pages/home";
+@import "pages/imagePopup";
+
+/** vendors **/
+@import "vendors/animate";
+@import "vendors/swiper-bundle";
+@import "vendors/videojs";

@@ -1,0 +1,24 @@
+﻿/**
+*
+* filter
+*
+**/
+// grayscale
+// @include filter(grayscale, 50%);
+// sepia
+// @include filter(sepia, 1);
+// opacity
+// @include filter(opacity, 0.2);
+// saturate
+// @include filter(saturate, 0.5);
+// brightness
+// @include filter(brightness, 2);
+// contrast
+// @include filter(contrast, 2);
+// blur
+// @include filter(blur, 3px);
+// drop-shadow
+// @include filter(drop-shadow, 5px 5px 5px #333);
+@mixin filter($filter-type, $filter-amount) {
+    @include css3 (filter, unquote($filter-type+unquote('(#{$filter-amount})')));
+}

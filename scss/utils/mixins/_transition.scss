@@ -1,0 +1,14 @@
+﻿/**
+*
+* transition
+*
+**/
+// @include transition(all, .5s, ease-in-out);
+@mixin transition($what: all, $time: 0.2s, $how: ease-in-out, $delay: null) {
+    @include css3 (transition, $what $time $how $delay);
+}
+
+// @include transitions(color 1s ease-in-out, background-color 1s ease-in-out);
+@mixin transitions($value...) {
+    transition: $value
+}

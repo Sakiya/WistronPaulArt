@@ -1,0 +1,39 @@
+﻿/**
+*
+* mixins
+*
+**/
+$max: 50;
+$offset: 5;
+$unit: 'px';
+@mixin list-loop($className, $styleName) {
+  $i: 0;
+  @while $i <= $max {
+    #{$className + $i} { 
+      #{$styleName}: #{$i + $unit};
+    }
+    $i: $i + $offset;
+  }
+}
+// Margins
+// m-t-10 margin-top : 10px;
+// m-r-10 margin-right: 10px;
+// m-b-10 margin-bottom: 10px;
+// m-l-10 margin-left: 10px;
+// m-10 margin: 10px 10px 10px 10px;
+@include list-loop('.m-t-', 'margin-top');
+@include list-loop('.m-r-', 'margin-right');
+@include list-loop('.m-b-', 'margin-bottom');
+@include list-loop('.m-l-', 'margin-left');
+@include list-loop('.m-', 'margin');
+// Paddings
+// p-t-10 padding-top : 10px;
+// p-r-10 padding-right: 10px;
+// p-b-10 padding-bottom: 10px;
+// p-l-10 padding-left: 10px;
+// p-10 padding: 10px 10px 10px 10px;
+@include list-loop('.p-t-', 'padding-top');
+@include list-loop('.p-r-', 'padding-right');
+@include list-loop('.p-b-', 'padding-bottom');
+@include list-loop('.p-l-', 'padding-left');
+@include list-loop('.p-', 'padding');

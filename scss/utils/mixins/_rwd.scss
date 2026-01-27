@@ -1,0 +1,166 @@
+﻿/**
+*
+* RWD
+*
+**/
+// desktops
+$desktop_width_4k: 4096px;
+$desktop_width_2k: 2048px;
+$desktop_width_pc: 1920px;
+$desktop_width_pc_small: 1680px;
+$desktop_width_laptop_large: 1440px;
+$desktop_width_pad_por_l: 1366px; // pad por landscape
+$desktop_width_laptop_medium: 1280px;
+$desktop_width_laptop_small: 1200px;
+$desktop_width_kv: 1160px;
+$desktop_width_pad_lm: 1080px;
+$desktop_width_pad_por_p: 1025px; // pad por portrait
+$desktop_width_pad_l: 1024px; // pad landscape
+$desktop_width_pad_pm: 960px;
+$desktop_width_pad_p: 768px; // pad portrait
+$desktop_width_phone_l: 767px; // phone landscape
+$desktop_width_smart_plus: 480px;
+$desktop_width_smart: 375px; // phone no plus
+$desktop_width_phone_p: 320px; // phone portrait
+
+// desktop
+@mixin screen_1920 {
+    @media screen and (max-width: $desktop_width_pc) {
+        @content;
+    }
+}
+
+@mixin screen_1680 {
+    @media screen and (max-width: $desktop_width_pc_small) {
+        @content;
+    }
+}
+
+@mixin screen_1440 {
+    @media screen and (max-width: $desktop_width_laptop_large) {
+        @content;
+    }
+}
+
+@mixin screen_1366 {
+    @media screen and (max-width: $desktop_width_pad_por_l) {
+        @content;
+    }
+}
+
+@mixin screen_1280 {
+    @media screen and (max-width: $desktop_width_laptop_medium) {
+        @content;
+    }
+}
+
+@mixin screen_1200 {
+    @media screen and (max-width: $desktop_width_laptop_small) {
+        @content;
+    }
+}
+
+@mixin screen_1160 {
+    @media screen and (max-width: $desktop_width_kv) {
+        @content;
+    }
+}
+
+@mixin screen_1080 {
+    @media screen and (max-width: $desktop_width_pad_lm) {
+        @content;
+    }
+}
+
+@mixin screen_1024 {
+    @media screen and (max-width: $desktop_width_pad_l) {
+        @content;
+    }
+}
+
+@mixin screen_960 {
+    @media screen and (max-width: $desktop_width_pad_pm) {
+        @content;
+    }
+}
+
+@mixin screen_767 {
+    @media screen and (max-width: $desktop_width_phone_l) {
+        @content;
+    }
+}
+
+@mixin screen_480 {
+    @media screen and (max-width: $desktop_width_smart_plus) {
+        @content;
+    }
+}
+
+@mixin screen_375 {
+    @media screen and (max-width: $desktop_width_smart) {
+        @content;
+    }
+}
+
+@mixin screen_320 {
+    @media screen and (max-width: $desktop_width_phone_p) {
+        @content;
+    }
+}
+
+// pad por
+@mixin screen_padpor {
+    @media screen and (min-device-width : $desktop_width_pad_por_p) and (max-device-width : $desktop_width_pad_por_l) {
+        @content;
+    }
+}
+
+@mixin screen_padpor_l {
+    @media screen and (min-device-width : $desktop_width_pad_por_p) and (max-device-width : $desktop_width_pad_por_l) and (orientation : landscape) {
+        @content;
+    }
+}
+
+@mixin screen_padpor_p {
+    @media screen and (min-device-width : $desktop_width_pad_por_p) and (max-device-width : $desktop_width_pad_por_l) and (orientation : portrait) {
+        @content;
+    }
+}
+
+// pad
+@mixin screen_pad {
+    @media screen and (min-device-width : $desktop_width_pad_p) and (max-device-width : $desktop_width_pad_l) {
+        @content;
+    }
+}
+
+@mixin screen_pad_l {
+    @media screen and (min-device-width : $desktop_width_pad_p) and (max-device-width : $desktop_width_pad_l) and (orientation : landscape) {
+        @content;
+    }
+}
+
+@mixin screen_pad_p {
+    @media screen and (min-device-width : $desktop_width_pad_p) and (max-device-width : $desktop_width_pad_l) and (orientation : portrait) {
+        @content;
+    }
+}
+
+// phones
+@mixin screen_phone {
+    @media screen and (min-device-width : $desktop_width_phone_p) and (max-device-width : $desktop_width_phone_l) {
+        @content;
+    }
+}
+
+@mixin screen_phone_l {
+    @media screen and (min-device-width : $desktop_width_phone_p) and (max-device-width : $desktop_width_phone_l) and (orientation : landscape) {
+        @content;
+    }
+}
+
+@mixin screen_phone_p {
+    @media screen and (min-device-width : $desktop_width_phone_p) and (max-device-width : $desktop_width_phone_l) and (orientation : portrait) {
+        @content;
+    }
+}

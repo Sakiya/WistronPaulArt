@@ -1,0 +1,36 @@
+﻿/**
+*
+* hide
+*
+**/
+// @include visuallyhidden;
+@mixin visuallyhidden {
+    // @if $legacy-support-for-ie {
+    //     clip: rect(0,0,0,0);
+    // }
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    &:active,
+    &:focus {
+        clip: auto;
+        height: auto;
+        margin: 0;
+        overflow: visible;
+        position: static;
+        width: auto;
+    }
+}
+//@include hide-text;
+@mixin hide-text() {
+    font: 0/0 a;
+    color: transparent;
+    text-shadow: none;
+    background-color: transparent;
+    border: 0;
+  }

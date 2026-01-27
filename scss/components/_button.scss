@@ -1,0 +1,24 @@
+﻿/**
+*
+* button
+*
+**/
+button {
+    width: 100px;
+    height: 50px;
+    background-color: $color_primary;
+    border: 1px solid $color_primary;
+    color: #fff;
+    @include border_radius(4px);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #fff;
+    margin-left: 10px;
+
+    @include screen_960 {
+        margin-top: 2vw;
+        width: 30vw;
+        font-size: 4vw;
+    }
+}

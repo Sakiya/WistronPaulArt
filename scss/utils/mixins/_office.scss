@@ -1,0 +1,22 @@
+﻿/**
+*
+* office
+*
+**/
+// @include office(relative, vertical);
+// @include office(absolute, horizontal);
+// @include office(null, center);
+@mixin office($position, $orientation) {
+    position: $position;
+    @if $orientation == 'vertical' {
+        top: 50%;
+        @include css3 (transform, translateY(-50%));
+    } @else if $orientation == 'horizontal' {
+        left: 50%;
+        @include css3 (transform, translate(-50%));
+    } @else if $orientation == 'center' {
+        top: 50%;
+        left: 50%;
+        @include css3 (transform, translate(-50%, -50%));
+    }
+}

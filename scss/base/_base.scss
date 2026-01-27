@@ -1,0 +1,122 @@
+﻿/**
+*
+* base
+*
+**/
+@charset "utf-8";
+
+body,
+html {
+    color: $text-color;
+    font-size: $font-size;
+    line-height: 1.6;
+    scroll-behavior: smooth;
+    position: relative;
+}
+
+body {
+    font-family:
+        'Noto Sans',
+        /* Simplified Chinese font by Google */
+        'Arial',
+        /* Fallback English font */
+        'Helvetica Neue',
+        /* macOS English font */
+        Helvetica,
+        /* Fallback English font */
+        sans-serif;
+    /* Final fallback */
+}
+
+body *:lang(zh) {
+    font-family:
+        'Noto Sans TC',
+        /* Traditional Chinese font by Google - 自訂字體 */
+        'PingFang TC',
+        /* macOS / iOS Traditional Chinese font - 蘋果系統字體 */
+        'PingFang SC',
+        /* macOS / iOS Simplified Chinese font - 蘋果系統字體 */
+        'Microsoft JhengHei',
+        /* Windows Traditional Chinese font - 微軟系統字體 */
+        'Microsoft YaHei',
+        /* Windows Simplified Chinese font - 微軟系統字體 */
+        'Source Han Sans TC',
+        /* Adobe 思源黑體 - Android/跨平台 */
+        'Source Han Sans SC',
+        /* Adobe 思源黑體簡體 - Android/跨平台 */
+        'Heiti SC',
+        /* Legacy macOS Chinese system font - 舊版蘋果字體 */
+        'SimHei',
+        /* Windows XP Simplified Chinese - 舊版微軟字體 */
+        'STHeiti',
+        /* 華文黑體 - 跨平台 */
+        'Arial',
+        /* Fallback English font */
+        sans-serif;
+    /* Final fallback */
+}
+
+//-----------------------------------anchor-----------------------------------
+a {
+    outline: none;
+}
+
+a:link,
+a:visited {
+    text-decoration: none;
+}
+
+a:hover,
+a:active {
+    text-decoration: none;
+}
+
+//-----------------------------------placeholder-----------------------------------
+::-webkit-input-placeholder {
+    color: $placeholder_color;
+}
+
+:-moz-placeholder {
+    color: $placeholder_color;
+    @include opacity(1)
+}
+
+::-moz-placeholder {
+    color: $placeholder_color;
+    @include opacity(1)
+}
+
+:-ms-input-placeholder {
+    color: $placeholder_color;
+}
+
+//-----------------------------------border-box-----------------------------------
+*,
+*:after,
+*:before {
+    @include css3 (box-sizing, border-box);
+    outline: none;
+}
+
+//-----------------------------------img-----------------------------------
+img {
+    max-width: 100%;
+    vertical-align: middle;
+}
+
+//-----------------------------------desktop/mobile-----------------------------------
+.desktop {
+    display: block !important;
+
+    @include screen_960 {
+        display: none !important;
+    }
+}
+
+.mobile {
+    display: none !important;
+
+    @include screen_960 {
+        display: block !important;
+    }
+}

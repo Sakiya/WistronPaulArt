@@ -1,0 +1,39 @@
+﻿/**
+*
+* themes
+*
+**/
+//-----------------------------------color-----------------------------------
+// themes
+$text_color: #333;
+$link_color: #379AE6;
+$date_color: #9A9A9A;
+$placeholder_color: #aaa;
+$color_primary: #63957C;
+$color_secondary: #0F5F80;
+$color_tertiary: #125776;
+$color_danger: #DD3B3F;
+$color_warning: #DD3B3F;
+$color_error: #DD3B3F;
+$color_light: #9095A0;
+$color_grey: #666666;
+$color_darkgray: #666666;
+$color_white: #ffffff;
+$color_black: #000000;
+$color_transparent: transparent;
+
+//-----------------------------------font-family-----------------------------------
+// 使用 Google Fonts 遠端資源
+// 字型已透過 HTML <head> 中的 Google Fonts link 標籤載入
+// 本地字型檔案已移除，可節省約 6MB 空間
+
+//-----------------------------------font-size-----------------------------------
+$font-size: 16px !default;
+//-----------------------------------width-----------------------------------
+$width_fluid: 100%;
+$width_wrapper: 1440px;
+$width_content: 1200px;
+$width_single : 900px;
+$width_auto: auto;
+
+//-----------------------------------custom @extend-----------------------------------
