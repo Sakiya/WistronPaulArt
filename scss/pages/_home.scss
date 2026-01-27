@@ -432,12 +432,12 @@
     0%,
     100% {
         opacity: 0.5;
-        transform: scale(1);
+        transform: translate(-50%, -50%) scale(1);
     }
 
     50% {
         opacity: 1;
-        transform: scale(1.2);
+        transform: translate(-50%, -50%) scale(1.2);
     }
 }
 
@@ -592,24 +592,50 @@
                     a {
                         position: absolute;
                         display: block;
-                        width: 30px;
-                        height: 30px;
-                        background: none;
-                        background-color: rgba(255, 183, 0, 0.5);
-                        filter: blur(3px);
-                        border-radius: 50%;
-                        font-size: 0;
-                        text-decoration: none;
-                        // 初始狀態：確保一開始就顯示
-                        opacity: 0.5;
-                        transform: scale(1);
-                        // 動畫先暫停，等 JavaScript 啟動
-                        animation: slowBlink 3s ease-in-out infinite;
-                        animation-play-state: paused;
+                        width: 24px;
+                        height: 24px;
+                        line-height: 24px;
+                        text-align: center;
 
                         @include screen_1024 {
                             width: 8.8%;
                             height: 8.8%;
+                        }
+
+                        &::after {
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            display: block;
+                            content: "";
+                            width: 30px;
+                            height: 30px;
+                            line-height: 30px;
+
+                            background: none;
+                            background-color: rgba(255, 183, 0, 0.5);
+                            filter: blur(3px);
+                            border-radius: 50%;
+                            font-size: 0;
+                            text-decoration: none;
+                            // 初始狀態：確保一開始就顯示（合併 translate 和 scale）
+                            opacity: 0.5;
+                            transform: translate(-50%, -50%) scale(1);
+                            // 動畫先暫停，等 JavaScript 啟動
+                            animation: slowBlink var(--blink-duration, 3s) ease-in-out infinite;
+                            animation-delay: var(--blink-delay, 0s);
+                            animation-play-state: paused;
+                        }
+
+                        img {
+                            width: 24px;
+                            height: 24px;
+                            vertical-align: top;
+                        }
+
+                        // 當父元素有 .blinking 類名時，啟動動畫
+                        &.blinking::after {
+                            animation-play-state: running;
                         }
 
                         &.work1 {

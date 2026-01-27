@@ -10,6 +10,102 @@
     // 當前語言設定（預設為中文）
     let currentLang = 'zh';
 
+    // ==================== 作品音訊同步配置 ====================
+    /**
+     * 作品音訊同步配置
+     * 格式：{ 作品ID: { 語言: [時間節點陣列] } }
+     * 
+     * 時間節點格式：{ time: 秒數, slideIndex: slide 索引 }
+     * slideIndex 從 0 開始（0 = 第一個 slide）
+     * 
+     * 注意：時間點為初步估算，可根據實際音檔長度微調
+     */
+    const workSyncConfig = {
+        // 作品 1：3 個節點（3 個 slides）
+        // 音檔總時長：中文約 2:00，英文約 2:10
+        1: {
+            zh: [
+                { time: 0, slideIndex: 0 },
+                { time: 60, slideIndex: 1 },
+                { time: 120, slideIndex: 2 }
+            ],
+            en: [
+                { time: 0, slideIndex: 0 },
+                { time: 65, slideIndex: 1 },
+                { time: 130, slideIndex: 2 }
+            ]
+        },
+
+        // 作品 2：5 個節點（5 個 slides）
+        // 音檔總時長：中文約 4:00，英文約 4:20
+        2: {
+            zh: [
+                { time: 0, slideIndex: 0 },
+                { time: 63, slideIndex: 1 },
+                { time: 102, slideIndex: 2 },
+                { time: 124, slideIndex: 3 },
+                { time: 151, slideIndex: 4 }
+            ],
+            en: [
+                { time: 0, slideIndex: 0 },
+                { time: 63, slideIndex: 1 },
+                { time: 102, slideIndex: 2 },
+                { time: 124, slideIndex: 3 },
+                { time: 151, slideIndex: 4 }
+            ]
+        },
+
+        // 作品 3：3 個節點（3 個 slides）
+        // 音檔總時長：中文約 2:00，英文約 2:10
+        3: {
+            zh: [
+                { time: 0, slideIndex: 0 },
+                { time: 144, slideIndex: 1 },
+                { time: 176, slideIndex: 2 }
+            ],
+            en: [
+                { time: 0, slideIndex: 0 },
+                { time: 144, slideIndex: 1 },
+                { time: 176, slideIndex: 2 }
+            ]
+        },
+
+        // 作品 4：3 個節點（3 個 slides）
+        // 音檔總時長：中文約 2:00，英文約 2:10
+        4: {
+            zh: [
+                { time: 0, slideIndex: 0 },
+                { time: 80, slideIndex: 1 },
+                { time: 103, slideIndex: 2 }
+            ],
+            en: [
+                { time: 0, slideIndex: 0 },
+                { time: 80, slideIndex: 1 },
+                { time: 103, slideIndex: 2 }
+            ]
+        },
+
+        // 作品 6：5 個節點（5 個 slides）
+        // 音檔總時長：中文約 4:00，英文約 4:20
+        6: {
+            zh: [
+                { time: 0, slideIndex: 0 },
+                { time: 58, slideIndex: 1 },
+                { time: 107, slideIndex: 2 },
+                { time: 178, slideIndex: 3 },
+                { time: 229, slideIndex: 4 }
+            ],
+            en: [
+                { time: 0, slideIndex: 0 },
+                { time: 58, slideIndex: 1 },
+                { time: 107, slideIndex: 2 },
+                { time: 178, slideIndex: 3 },
+                { time: 229, slideIndex: 4 }
+            ]
+        }
+        // 作品 5、7、8 不需要同步功能
+    };
+
     // 翻譯物件
     const translations = {
         zh: {
@@ -371,46 +467,83 @@
     function updateHash(hash, replace = false) {
         const newHash = hash ? '#' + hash : '';
         const currentHash = window.location.hash;
+        const baseUrl = window.location.origin + window.location.pathname;
+        const newUrl = baseUrl + newHash;
 
-        console.log('updateHash: 當前 hash:', currentHash, '新 hash:', newHash, 'replace:', replace); // 調試信息
+        console.log('[History] updateHash 開始', {
+            currentHash: currentHash,
+            newHash: newHash,
+            replace: replace,
+            currentUrl: window.location.href,
+            newUrl: newUrl
+        });
 
         // 如果新的 hash 與當前 hash 相同，不執行任何操作
         if (currentHash === newHash || (currentHash === '' && newHash === '')) {
-            console.log('updateHash: hash 相同，跳過更新'); // 調試信息
+            console.log('[History] updateHash: hash 相同，跳過更新');
             return;
         }
 
-        // 對於 Hash-based routing，直接使用 window.location.hash 更可靠
-        // 但這樣不會建立歷史記錄，所以我們先使用 pushState，然後手動更新 hash
+        // 標記正在更新 hash，避免觸發 hashchange 事件時重複處理
+        window._isUpdatingHash = true;
+
+        // 對於 hash-based routing，直接更新 window.location.hash 會自動建立歷史記錄
+        // 這是瀏覽器的標準行為，最簡單和最可靠的方法
+
         if (replace) {
             // 使用 replaceState，不建立新的歷史記錄
-            // 直接更新 window.location.hash，這樣瀏覽器會立即更新地址欄
+            // 先更新 window.location.hash，這樣瀏覽器會立即更新地址欄
             window.location.hash = newHash;
-            // 然後使用 replaceState 同步歷史記錄
+            // 然後使用 replaceState 同步歷史記錄（使用當前 URL，因為 hash 已經更新了）
+            // 這樣可以替換當前歷史記錄，而不是建立新的
             history.replaceState({ hash: hash }, '', window.location.href);
-            console.log('updateHash: 使用 replaceState，當前 URL:', window.location.href); // 調試信息
+            console.log('[History] updateHash: 使用 replaceState', {
+                hash: hash,
+                url: window.location.href,
+                historyLength: history.length
+            });
         } else {
-            // 先使用 pushState 建立歷史記錄
-            // 注意：pushState 的 URL 參數如果包含 hash，某些瀏覽器可能不會立即更新地址欄
-            // 所以我們先更新 window.location.hash，讓瀏覽器立即更新地址欄
-            // 但這樣會觸發 hashchange 事件，所以我們需要標記一下
-            window._isUpdatingHash = true;
+            // 使用 pushState 建立歷史記錄
+            // 直接更新 window.location.hash，這會自動建立歷史記錄
+            // 這是瀏覽器的標準行為，不需要額外的 pushState
             window.location.hash = newHash;
-            // 然後使用 pushState 同步歷史記錄（使用當前 URL，因為 hash 已經更新了）
-            history.pushState({ hash: hash }, '', window.location.href);
-            window._isUpdatingHash = false;
-            console.log('updateHash: 使用 pushState，當前 URL:', window.location.href); // 調試信息
+
+            console.log('[History] updateHash: 使用 pushState（通過 hash 更新）', {
+                hash: hash,
+                url: window.location.href,
+                historyLength: history.length,
+                actualHash: window.location.hash,
+                beforeHash: currentHash
+            });
         }
+
+        // 清除標記（延遲清除，確保 hashchange 事件已處理）
+        // 注意：hashchange 事件是同步觸發的，所以我們需要在同一個事件循環中清除標記
+        // 但為了確保所有 hashchange 監聽器都已執行，我們使用 setTimeout
+        setTimeout(() => {
+            window._isUpdatingHash = false;
+            console.log('[History] updateHash: 清除 _isUpdatingHash 標記', {
+                finalHash: window.location.hash,
+                historyLength: history.length
+            });
+        }, 0); // 改為 0ms，確保在下一個事件循環中清除，但不會太晚
     }
 
     /**
      * 切換語言
      * @param {string} lang - 語言代碼 ('zh' 或 'en')
      */
-    function switchLanguage(lang) {
+    function switchLanguage(lang, shouldUpdateHash = true) {
         if (lang !== 'zh' && lang !== 'en') {
             lang = 'zh';
         }
+
+        console.log('[History] switchLanguage 開始', {
+            lang: lang,
+            currentLang: currentLang,
+            shouldUpdateHash: shouldUpdateHash,
+            currentHash: window.location.hash
+        });
 
         currentLang = lang;
         applyTranslations(lang);
@@ -425,37 +558,51 @@
         // 重新載入音訊檔案（根據新語言）
         reloadAudioForLanguage(lang);
 
+        // 只有在需要時才更新 URL hash
+        if (!shouldUpdateHash) {
+            console.log('[History] switchLanguage: shouldUpdateHash 為 false，跳過更新 hash');
+            return;
+        }
+
         // 更新 URL hash
         const currentHash = window.location.hash.replace('#', '');
 
         // 獲取當前 tab 和作品名稱
         const hashInfo = getTabFromHash();
 
-        // 如果當前 hash 是 'en' 或 'zh'，直接更新語言 hash
+        // 計算目標 hash
+        let targetHash = '';
         if (currentHash === 'en' || currentHash === 'zh') {
-            updateHash(lang === 'en' ? 'en' : '');
+            // 如果當前 hash 是 'en' 或 'zh'，直接更新語言 hash
+            targetHash = lang === 'en' ? 'en' : '';
+        } else if (hashInfo.tab === 'workDetail' && hashInfo.workName) {
+            // 如果當前在作品詳情頁面，更新 URL 以包含語言
+            targetHash = lang === 'en' ? 'en/' + hashInfo.workName : hashInfo.workName;
+        } else if (hashInfo.tab === 'audio') {
+            // 如果當前在語音導覽頁面
+            targetHash = lang === 'en' ? 'en/audio' : 'audio';
+        } else {
+            // 如果沒有 hash 或是在展覽簡介頁面，直接設置語言 hash
+            targetHash = lang === 'en' ? 'en' : '';
         }
-        // 如果當前在作品詳情頁面，更新 URL 以包含語言
-        else if (hashInfo.tab === 'workDetail' && hashInfo.workName) {
-            // 使用組合格式：語言 + 作品名稱（使用 / 分隔，例如 #en/Work_1）
-            if (lang === 'en') {
-                updateHash('en/' + hashInfo.workName);
-            } else {
-                updateHash(hashInfo.workName);
-            }
+
+        // 檢查目標 hash 是否與當前 hash 相同
+        const targetHashWithPrefix = targetHash ? '#' + targetHash : '';
+        if (window.location.hash === targetHashWithPrefix) {
+            console.log('[History] switchLanguage: hash 已經正確，跳過更新', {
+                currentHash: window.location.hash,
+                targetHash: targetHashWithPrefix
+            });
+            return;
         }
-        // 如果當前在語音導覽頁面
-        else if (hashInfo.tab === 'audio') {
-            if (lang === 'en') {
-                updateHash('en/audio');
-            } else {
-                updateHash('audio');
-            }
-        }
-        // 如果沒有 hash 或是在展覽簡介頁面，直接設置語言 hash
-        else {
-            updateHash(lang === 'en' ? 'en' : '');
-        }
+
+        // 使用 replaceState 來替換歷史記錄，而不是建立新的
+        // 因為這是由 hashchange 事件觸發的語言同步，不應該建立新的歷史記錄
+        console.log('[History] switchLanguage: 更新 hash', {
+            targetHash: targetHash,
+            usingReplace: true
+        });
+        updateHash(targetHash, true); // 使用 replace 模式，不建立新的歷史記錄
     }
 
     /**
@@ -1088,6 +1235,37 @@
         // 停止所有正在播放的媒體
         stopAllMedia();
 
+        // 如果切換離開作品詳情，歸零所有作品（方案 A：歸零）
+        if (targetTab !== 'workDetail') {
+            resetAllWorks();
+        }
+
+        // 如果切換到語音導覽頁面，歸零語音導覽播放器
+        if (targetTab === 'audio' && window.audioVideoPlayer) {
+            try {
+                const player = window.audioVideoPlayer;
+                if (player && typeof player.currentTime === 'function') {
+                    player.currentTime(0);
+                    console.log('[AudioGuide] 切換到語音導覽頁面，重置播放時間為 0');
+                }
+            } catch (e) {
+                console.warn('[AudioGuide] 重置播放時間失敗:', e);
+            }
+        }
+
+        // 如果切換離開語音導覽頁面，歸零語音導覽播放器
+        if (targetTab !== 'audio' && window.audioVideoPlayer) {
+            try {
+                const player = window.audioVideoPlayer;
+                if (player && typeof player.currentTime === 'function') {
+                    player.currentTime(0);
+                    console.log('[AudioGuide] 切換離開語音導覽頁面，重置播放時間為 0');
+                }
+            } catch (e) {
+                console.warn('[AudioGuide] 重置播放時間失敗:', e);
+            }
+        }
+
         // 更新按鈕 active 狀態
         tabButtons.forEach(btn => {
             const btnTab = btn.getAttribute('data-tab');
@@ -1109,6 +1287,103 @@
                     setTimeout(() => {
                         restoreYouTubeVideo();
                     }, 100);
+                }
+
+                // 如果切換到語音導覽頁面，自動播放語音導覽音訊
+                if (targetTab === 'audio') {
+                    let playerReadyState = 'N/A';
+                    if (window.audioVideoPlayer && typeof window.audioVideoPlayer.readyState === 'function') {
+                        try {
+                            playerReadyState = window.audioVideoPlayer.readyState();
+                        } catch (e) {
+                            playerReadyState = 'Error: ' + e.message;
+                        }
+                    }
+
+                    console.log('[AudioGuide] 切換到語音導覽頁面，準備自動播放', {
+                        playerExists: !!window.audioVideoPlayer,
+                        playerReadyState: playerReadyState
+                    });
+
+                    // 如果播放器還沒初始化，等待初始化完成
+                    const tryAutoPlay = () => {
+                        const player = window.audioVideoPlayer || videojs.getPlayer('audioVideoPlayer');
+                        if (!player) {
+                            console.log('[AudioGuide] 播放器尚未初始化，延遲重試...');
+                            setTimeout(tryAutoPlay, 200);
+                            return;
+                        }
+
+                        console.log('[AudioGuide] 播放器已找到，準備播放', {
+                            readyState: player.readyState(),
+                            paused: player.paused(),
+                            currentTime: player.currentTime()
+                        });
+
+                        // 確保播放時間已重置為 0
+                        try {
+                            if (player.currentTime() > 0) {
+                                player.currentTime(0);
+                                console.log('[AudioGuide] 重置播放時間為 0');
+                            }
+                        } catch (e) {
+                            console.warn('[AudioGuide] 重置播放時間失敗:', e);
+                        }
+
+                        // 確保圖示已設置
+                        setupAudioPlayerIcon(player);
+
+                        // 確保播放器已準備好
+                        const tryPlay = () => {
+                            if (player.readyState() >= 2) {
+                                // 音訊已載入，直接播放
+                                console.log('[AudioGuide] 音訊已載入，開始播放');
+                                player.play().then(() => {
+                                    console.log('[AudioGuide] 播放成功');
+                                    // 播放成功後更新圖示
+                                    setupAudioPlayerIcon(player);
+                                }).catch(function (err) {
+                                    console.warn('[AudioGuide] 自動播放失敗（可能是瀏覽器政策限制）:', err);
+                                    // 播放失敗後也要更新圖示
+                                    setupAudioPlayerIcon(player);
+                                });
+                            } else {
+                                console.log('[AudioGuide] 音訊尚未載入，等待載入...', {
+                                    readyState: player.readyState()
+                                });
+                                // 等待音訊載入
+                                const onCanPlay = () => {
+                                    // 再次確保播放時間為 0
+                                    try {
+                                        if (player.currentTime() > 0) {
+                                            player.currentTime(0);
+                                        }
+                                    } catch (e) {
+                                        // 忽略錯誤
+                                    }
+
+                                    console.log('[AudioGuide] 音訊載入完成，開始播放');
+                                    player.play().then(() => {
+                                        console.log('[AudioGuide] 播放成功');
+                                        // 播放成功後更新圖示
+                                        setupAudioPlayerIcon(player);
+                                    }).catch(function (err) {
+                                        console.warn('[AudioGuide] 自動播放失敗（可能是瀏覽器政策限制）:', err);
+                                        // 播放失敗後也要更新圖示
+                                        setupAudioPlayerIcon(player);
+                                    });
+                                    player.off('canplay', onCanPlay);
+                                    player.off('loadedmetadata', onCanPlay);
+                                };
+                                player.on('canplay', onCanPlay);
+                                player.on('loadedmetadata', onCanPlay);
+                            }
+                        };
+
+                        tryPlay();
+                    };
+
+                    setTimeout(tryAutoPlay, 500);
                 }
 
                 // 平滑滾動到頂部
@@ -1149,30 +1424,45 @@
 
         // 更新 URL hash（使用 pushState 建立歷史記錄）
         if (shouldUpdateHash) {
-            console.log('switchTab: 準備更新 hash, targetTab:', targetTab); // 調試信息
+            console.log('[History] switchTab: 準備更新 hash', {
+                targetTab: targetTab,
+                currentHash: window.location.hash,
+                currentLang: currentLang
+            });
+
             if (targetTab === 'exhibition') {
-                // 展覽簡介：根據當前語言決定 hash
-                const hashInfo = getTabFromHash();
-                const hashValue = hashInfo.lang === 'en' ? 'en' : '';
-                console.log('switchTab: 更新展覽簡介 hash:', hashValue); // 調試信息
+                // 展覽簡介：根據當前語言決定 hash（使用 currentLang，而不是 getTabFromHash）
+                const hashValue = currentLang === 'en' ? 'en' : '';
+                console.log('[History] switchTab: 更新展覽簡介 hash', {
+                    hashValue: hashValue,
+                    currentLang: currentLang
+                });
                 updateHash(hashValue);
             } else if (targetTab === 'audio') {
-                // 語音導覽：根據當前語言決定 hash
-                const hashInfo = getTabFromHash();
-                const hashValue = hashInfo.lang === 'en' ? 'en/audio' : 'audio';
-                console.log('switchTab: 更新語音導覽 hash:', hashValue); // 調試信息
+                // 語音導覽：根據當前語言決定 hash（使用 currentLang，而不是 getTabFromHash）
+                const hashValue = currentLang === 'en' ? 'en/audio' : 'audio';
+                console.log('[History] switchTab: 更新語音導覽 hash', {
+                    hashValue: hashValue,
+                    currentLang: currentLang
+                });
                 updateHash(hashValue);
             } else if (targetTab === 'workDetail') {
                 // 作品詳情：hash 應該已經在點擊作品時設置了，這裡不更新
                 // 但如果沒有 hash，可能需要設置一個預設值
                 // 實際上，workDetail 的 hash 應該在點擊作品時已經設置
+                console.log('[History] switchTab: 作品詳情，不更新 hash（應已在點擊時設置）');
             } else {
-                // 其他 tab：根據當前語言決定 hash
-                const hashInfo = getTabFromHash();
-                const hashValue = hashInfo.lang === 'en' ? 'en/' + targetTab : targetTab;
-                console.log('switchTab: 更新其他 tab hash:', hashValue); // 調試信息
+                // 其他 tab：根據當前語言決定 hash（使用 currentLang，而不是 getTabFromHash）
+                const hashValue = currentLang === 'en' ? 'en/' + targetTab : targetTab;
+                console.log('[History] switchTab: 更新其他 tab hash', {
+                    hashValue: hashValue,
+                    targetTab: targetTab,
+                    currentLang: currentLang
+                });
                 updateHash(hashValue);
             }
+        } else {
+            console.log('[History] switchTab: shouldUpdateHash 為 false，跳過更新 hash');
         }
     }
 
@@ -1244,22 +1534,59 @@
      * @param {number} workId - 作品編號 (1-9)
      */
     function initWorkPlayer(workId) {
+        console.log('[AudioSync] initWorkPlayer 被調用', { workId });
+
         // 查找該作品的所有播放器（可能有多個，例如在 Swiper 中）
         const workContent = document.querySelector('.workDetailContent[data-work="' + workId + '"]');
         if (!workContent) {
+            console.warn('[AudioSync] 找不到作品內容', workId);
             return;
         }
 
-        // 查找所有該作品的播放器元素（包括主播放器和 Swiper 中的播放器）
-        const playerElements = workContent.querySelectorAll('video[id^="workAudioPlayer' + workId + '"]');
+        console.log('[AudioSync] 找到作品內容', {
+            workId,
+            workContentExists: !!workContent,
+            display: workContent.style.display,
+            isVisible: workContent.offsetParent !== null
+        });
 
+        // 先查找所有 video 元素（包括 _html5_api）
+        const allVideoElements = workContent.querySelectorAll('video');
+        console.log('[AudioSync] 所有 video 元素', {
+            workId,
+            count: allVideoElements.length,
+            ids: Array.from(allVideoElements).map(el => el.id)
+        });
+
+        // 查找所有該作品的播放器元素（只選擇原始的 video 元素，排除 Video.js 自動創建的 _html5_api 元素）
+        const playerElements = workContent.querySelectorAll('video[id^="workAudioPlayer' + workId + '"]:not([id$="_html5_api"])');
+        console.log('[AudioSync] 找到播放器元素', {
+            workId,
+            count: playerElements.length,
+            ids: Array.from(playerElements).map(el => el.id)
+        });
+
+        // 如果找不到，嘗試更寬鬆的選擇器
         if (playerElements.length === 0) {
+            // 嘗試直接通過 ID 查找
+            const directPlayer = document.getElementById('workAudioPlayer' + workId);
+            if (directPlayer) {
+                console.log('[AudioSync] 通過直接 ID 找到播放器', {
+                    workId,
+                    playerId: directPlayer.id,
+                    parent: directPlayer.parentElement?.className
+                });
+                initSingleWorkPlayer('workAudioPlayer' + workId, workId);
+                return;
+            }
+            console.warn('[AudioSync] 沒有找到播放器元素', workId);
             return;
         }
 
         // 為每個播放器初始化
         playerElements.forEach((playerElement) => {
-            const playerId = playerElement.id;
+            const playerId = playerElement.id; // 使用原始 ID，例如 'workAudioPlayer2'
+            console.log('[AudioSync] 初始化播放器', { playerId, workId });
             initSingleWorkPlayer(playerId, workId);
         });
     }
@@ -1270,20 +1597,25 @@
      * @param {number} workId - 作品編號 (1-9)
      */
     function initSingleWorkPlayer(playerId, workId) {
+        console.log('[AudioSync] initSingleWorkPlayer 被調用', { playerId, workId });
+
         const playerElement = document.getElementById(playerId);
 
         if (!playerElement) {
+            console.warn('[AudioSync] 找不到播放器元素', playerId);
             return;
         }
 
         // 檢查 Video.js 是否已載入
         if (typeof videojs === 'undefined') {
-            console.warn('Video.js is not loaded');
+            console.warn('[AudioSync] Video.js is not loaded');
             return;
         }
 
         // 檢查播放器是否已經初始化
         let player = videojs.getPlayer(playerId);
+        console.log('[AudioSync] 播放器狀態檢查', { playerId, workId, playerExists: !!player });
+
         if (!player) {
             // 初始化播放器
             player = videojs(playerId, {
@@ -1334,6 +1666,13 @@
                 setTimeout(function () {
                     setupWorkPlayerIcon(player);
                 }, 500);
+
+                // 設置音訊同步（如果該作品需要）
+                // 延遲更長時間，確保 Swiper 已完全初始化
+                setTimeout(function () {
+                    console.log('[AudioSync] 準備設置同步功能', { playerId, workId });
+                    setupWorkAudioSync(playerId, workId);
+                }, 800);
             });
         } else {
             // 播放器已存在，直接設置圖示
@@ -1341,6 +1680,27 @@
             setTimeout(function () {
                 setupWorkPlayerIcon(player);
             }, 100);
+
+            // 播放器已存在，也需要設置音訊同步
+            setTimeout(function () {
+                console.log('[AudioSync] 播放器已存在，準備設置同步功能', { playerId, workId });
+                setupWorkAudioSync(playerId, workId);
+            }, 800);
+
+            // 播放器已存在，自動播放
+            setTimeout(function () {
+                if (player.readyState() >= 2) {
+                    player.play().catch(function (err) {
+                        console.warn('作品播放器自動播放失敗（可能是瀏覽器政策限制）:', err);
+                    });
+                } else {
+                    player.on('loadedmetadata', function () {
+                        player.play().catch(function (err) {
+                            console.warn('作品播放器自動播放失敗（可能是瀏覽器政策限制）:', err);
+                        });
+                    });
+                }
+            }, 500);
         }
 
         // 確保 player 變數存在
@@ -1359,10 +1719,21 @@
                     src: audioFile
                 });
 
-                // 監聽音訊載入完成後，確保圖示顯示
+                // 監聽音訊載入完成後，確保圖示顯示並自動播放
                 player.on('loadedmetadata', function () {
                     setupWorkPlayerIcon(player);
+                    // 自動播放
+                    player.play().catch(function (err) {
+                        console.warn('作品播放器自動播放失敗（可能是瀏覽器政策限制）:', err);
+                    });
                 });
+
+                // 如果音訊已經載入，立即播放
+                if (player.readyState() >= 2) {
+                    player.play().catch(function (err) {
+                        console.warn('作品播放器自動播放失敗（可能是瀏覽器政策限制）:', err);
+                    });
+                }
 
                 // 監聽錯誤事件
                 player.on('error', function () {
@@ -1377,6 +1748,311 @@
                 console.warn('找不到對應的音訊檔案:', workId);
             }
         }
+    }
+
+    /**
+     * 設置作品音訊與 Swiper 同步功能
+     * @param {string} playerId - 播放器 ID（例如 'workAudioPlayer1'）
+     * @param {number} workId - 作品編號 (1-9)
+     */
+    function setupWorkAudioSync(playerId, workId) {
+        console.log('[AudioSync] 開始設置同步功能', { playerId, workId });
+
+        // 檢查該作品是否需要同步
+        if (!workSyncConfig[workId]) {
+            console.log('[AudioSync] 作品', workId, '不需要同步功能');
+            return; // 作品 5、7、8 不需要同步
+        }
+
+        // 作品 1 特殊處理：只在手機版啟用同步功能
+        if (workId === 1) {
+            const isMobile = window.innerWidth <= 960;
+            console.log('[AudioSync] 作品1設備檢查', { isMobile, width: window.innerWidth });
+            if (!isMobile) {
+                // 桌機版：不需要同步，整支音檔播完
+                console.log('[AudioSync] 作品1桌機版，跳過同步');
+                return;
+            }
+            // 手機版：繼續執行同步功能
+            console.log('[AudioSync] 作品1手機版，啟用同步');
+        }
+
+        const player = videojs.getPlayer(playerId);
+        if (!player) {
+            console.warn('[AudioSync] 播放器不存在', playerId);
+            return;
+        }
+        console.log('[AudioSync] 播放器已找到', playerId);
+
+        // 獲取 Swiper 實例（可能需要等待 Swiper 初始化）
+        const getSwiper = () => {
+            // 作品 1 在手機版使用 Mobile key
+            if (workId === 1) {
+                const swiper = window.workSwipers && window.workSwipers[workId + 'Mobile'];
+                if (!swiper) {
+                    console.log('[AudioSync] Swiper 未找到 (作品1 Mobile)', workId + 'Mobile', '可用的 keys:', Object.keys(window.workSwipers || {}));
+                }
+                return swiper;
+            }
+            // 其他作品使用標準 key
+            const swiper = window.workSwipers && window.workSwipers[workId];
+            if (!swiper) {
+                console.log('[AudioSync] Swiper 未找到', workId, '可用的 keys:', Object.keys(window.workSwipers || {}));
+            }
+            return swiper;
+        };
+
+        // 獲取當前語言的時間點配置
+        const lang = currentLang; // 'zh' 或 'en'
+        const timePoints = workSyncConfig[workId][lang] || workSyncConfig[workId]['zh'];
+
+        if (!timePoints || timePoints.length === 0) {
+            console.warn('[AudioSync] 時間點配置不存在', { workId, lang });
+            return;
+        }
+
+        console.log('[AudioSync] 配置載入成功', { workId, lang, timePoints });
+
+        // 追蹤已觸發的時間點，避免重複切換
+        const triggeredPoints = new Set();
+
+        // 標記是否為用戶手動切換（避免循環觸發）
+        let isUserSlideChange = false;
+        let isAutoSlideChange = false;
+
+        // ========== 功能 1：音訊播放到時間點 → 自動切換 slide ==========
+        // 監聽播放時間更新
+        let lastLoggedTime = -1; // 用於減少日誌輸出
+        player.on('timeupdate', function () {
+            // 如果正在手動切換 slide，跳過自動切換
+            if (isUserSlideChange) {
+                return;
+            }
+
+            const swiper = getSwiper();
+            if (!swiper) {
+                return;
+            }
+
+            const currentTime = player.currentTime();
+
+            // 快速檢查：是否在任何時間點的 ±5 秒範圍內（性能優化）
+            const isNearAnyPoint = timePoints.some(point =>
+                Math.abs(currentTime - point.time) < 5
+            );
+
+            // 每 10 秒記錄一次時間（用於調試）
+            if (Math.floor(currentTime) % 10 === 0 && Math.floor(currentTime) !== lastLoggedTime) {
+                lastLoggedTime = Math.floor(currentTime);
+                console.log('[AudioSync] timeupdate', {
+                    workId,
+                    currentTime: currentTime.toFixed(2),
+                    isNearAnyPoint,
+                    activeSlide: swiper.activeIndex
+                });
+            }
+
+            if (!isNearAnyPoint) {
+                return; // 跳過檢查，節省 CPU
+            }
+
+            // 檢查每個時間點
+            for (let i = 0; i < timePoints.length; i++) {
+                const point = timePoints[i];
+                const pointKey = `${workId}-${lang}-${i}`;
+
+                // 檢查是否到達時間點（允許 0.5 秒誤差）
+                if (currentTime >= point.time - 0.5 && currentTime < point.time + 0.5) {
+                    // 檢查是否已經觸發過
+                    if (!triggeredPoints.has(pointKey)) {
+                        // 檢查當前 slide 是否已經是目標
+                        if (swiper.activeIndex !== point.slideIndex) {
+                            console.log('[AudioSync] 自動切換 Slide', {
+                                workId,
+                                currentTime: currentTime.toFixed(2),
+                                targetTime: point.time,
+                                fromSlide: swiper.activeIndex,
+                                toSlide: point.slideIndex
+                            });
+                            isAutoSlideChange = true;
+                            swiper.slideTo(point.slideIndex);
+                            isAutoSlideChange = false;
+                        }
+                        triggeredPoints.add(pointKey);
+                    }
+                    break; // 只處理第一個匹配的時間點
+                }
+            }
+        });
+
+        console.log('[AudioSync] timeupdate 事件監聽器已綁定');
+
+        // ========== 功能 2：用戶手動切換 slide → 音訊跳轉到對應時間點 ==========
+        // 監聽 Swiper slide 切換事件（需要延遲綁定，確保 Swiper 已初始化）
+        const bindSwiperEvents = () => {
+            const swiper = getSwiper();
+            if (!swiper) {
+                console.log('[AudioSync] Swiper 尚未初始化，延遲重試...', workId);
+                // 如果 Swiper 還沒初始化，延遲重試
+                setTimeout(bindSwiperEvents, 100);
+                return;
+            }
+
+            console.log('[AudioSync] Swiper 已找到，綁定 slideChange 事件', {
+                workId,
+                swiperKey: workId === 1 ? workId + 'Mobile' : workId,
+                activeIndex: swiper.activeIndex,
+                slidesCount: swiper.slides ? swiper.slides.length : 0
+            });
+
+            // 移除舊的事件監聽器（如果有的話）
+            // 注意：Swiper 的 off 方法需要傳入相同的函數引用
+            // 但我們每次都是新函數，所以使用命名空間或直接綁定
+            swiper.off('slideChange', handleSlideChange);
+
+            // 綁定新的事件監聽器
+            // 使用 once: false 確保事件持續監聽
+            swiper.on('slideChange', handleSlideChange);
+
+            // 測試：手動觸發一次以確認綁定成功
+            console.log('[AudioSync] slideChange 事件監聽器已綁定，當前 slide:', swiper.activeIndex);
+
+            // 驗證事件監聽器是否正確綁定
+            const events = swiper._events && swiper._events.slideChange;
+            if (events) {
+                console.log('[AudioSync] 確認：slideChange 事件監聽器數量:', events.length);
+            }
+        };
+
+        const handleSlideChange = function () {
+            console.log('[AudioSync] ========== slideChange 事件觸發 ==========', {
+                workId,
+                isAutoSlideChange,
+                isUserSlideChange,
+                timestamp: new Date().toISOString()
+            });
+
+            // 如果是自動切換觸發的，不處理
+            if (isAutoSlideChange) {
+                console.log('[AudioSync] 自動切換觸發，跳過處理');
+                return;
+            }
+
+            // 標記為用戶手動切換
+            isUserSlideChange = true;
+
+            const swiper = getSwiper();
+            if (!swiper) {
+                console.warn('[AudioSync] Swiper 不存在，無法處理 slideChange');
+                return;
+            }
+
+            const currentSlideIndex = swiper.activeIndex;
+            console.log('[AudioSync] 當前 Slide 索引', currentSlideIndex);
+
+            // 找到對應的時間點
+            let targetTime = 0;
+            for (let i = 0; i < timePoints.length; i++) {
+                if (timePoints[i].slideIndex === currentSlideIndex) {
+                    targetTime = timePoints[i].time;
+                    break;
+                }
+            }
+
+            // 如果找不到對應的時間點，使用 slide 索引 × 60 秒（預設值）
+            if (targetTime === 0 && currentSlideIndex > 0) {
+                targetTime = currentSlideIndex * 60;
+                console.log('[AudioSync] 使用預設時間計算', targetTime);
+            }
+
+            console.log('[AudioSync] 手動切換 Slide，跳轉音訊', {
+                workId,
+                slideIndex: currentSlideIndex,
+                targetTime: targetTime.toFixed(2),
+                currentTime: player.currentTime().toFixed(2)
+            });
+
+            // 跳轉音訊到對應時間點
+            if (player) {
+                player.currentTime(targetTime);
+            }
+
+            // 重置觸發記錄，因為時間點改變了
+            triggeredPoints.clear();
+
+            // 延遲重置標記，避免立即觸發自動切換
+            setTimeout(function () {
+                isUserSlideChange = false;
+            }, 500);
+        };
+
+        // 延遲綁定 Swiper 事件（確保 Swiper 已初始化）
+        // 增加重試次數，確保 Swiper 已完全初始化
+        let retryCount = 0;
+        const maxRetries = 20; // 最多重試 20 次（2 秒）
+
+        const tryBindSwiperEvents = () => {
+            const swiper = getSwiper();
+            if (!swiper && retryCount < maxRetries) {
+                retryCount++;
+                console.log('[AudioSync] 重試綁定 Swiper 事件', { workId, retryCount });
+                setTimeout(tryBindSwiperEvents, 100);
+                return;
+            }
+
+            if (swiper) {
+                bindSwiperEvents();
+            } else {
+                console.error('[AudioSync] Swiper 初始化失敗，無法綁定事件', {
+                    workId,
+                    availableSwipers: Object.keys(window.workSwipers || {})
+                });
+            }
+        };
+
+        setTimeout(tryBindSwiperEvents, 300);
+
+        // ========== 功能 3：重置功能 ==========
+        // 當播放重新開始時，重置觸發記錄
+        player.on('play', function () {
+            // 如果從頭開始播放，重置觸發記錄和 slide
+            if (player.currentTime() < 1) {
+                triggeredPoints.clear();
+                const swiper = getSwiper();
+                if (swiper && swiper.activeIndex !== 0) {
+                    isAutoSlideChange = true;
+                    swiper.slideTo(0);
+                    isAutoSlideChange = false;
+                }
+            }
+        });
+
+        // 當用戶手動跳轉時，重置觸發記錄
+        player.on('seeked', function () {
+            triggeredPoints.clear();
+            const swiper = getSwiper();
+            if (!swiper) {
+                return;
+            }
+
+            // 根據當前時間找到對應的 slide
+            const currentTime = player.currentTime();
+            let targetSlideIndex = 0;
+
+            // 找到最接近的時間點對應的 slide
+            for (let i = timePoints.length - 1; i >= 0; i--) {
+                if (currentTime >= timePoints[i].time - 0.5) {
+                    targetSlideIndex = timePoints[i].slideIndex;
+                    break;
+                }
+            }
+
+            if (swiper.activeIndex !== targetSlideIndex) {
+                isAutoSlideChange = true;
+                swiper.slideTo(targetSlideIndex);
+                isAutoSlideChange = false;
+            }
+        });
     }
 
     /**
@@ -1459,6 +2135,43 @@
                     }
                 }
             }, true);
+        }
+    }
+
+    /**
+     * 重置所有作品（歸零功能 - 方案 A）
+     * 將所有作品的音訊時間重置為 0:00，Swiper 切換到第一個 slide
+     */
+    function resetAllWorks() {
+        for (let i = 1; i <= 9; i++) {
+            const playerId = 'workAudioPlayer' + i;
+            try {
+                const player = videojs.getPlayer(playerId);
+                if (player) {
+                    player.pause();
+                    player.currentTime(0); // 歸零
+                }
+            } catch (e) {
+                // 播放器可能尚未初始化，忽略錯誤
+            }
+
+            // 重置 Swiper 到第一個 slide
+            // 先嘗試標準 key
+            if (window.workSwipers && window.workSwipers[i]) {
+                try {
+                    window.workSwipers[i].slideTo(0);
+                } catch (e) {
+                    console.warn('重置 Swiper 失敗:', e);
+                }
+            }
+            // 如果是作品 1，也嘗試 mobile key
+            if (i === 1 && window.workSwipers && window.workSwipers[i + 'Mobile']) {
+                try {
+                    window.workSwipers[i + 'Mobile'].slideTo(0);
+                } catch (e) {
+                    console.warn('重置 Swiper Mobile 失敗:', e);
+                }
+            }
         }
     }
 
@@ -1666,6 +2379,16 @@
         const workDetailContents = document.querySelectorAll('.workDetailContent');
         const wrapper = document.querySelector('.wrapper');
 
+        // 停止語音導覽播放器（如果正在播放）
+        if (window.audioVideoPlayer && typeof window.audioVideoPlayer.pause === 'function') {
+            try {
+                window.audioVideoPlayer.pause();
+                console.log('[AudioGuide] 切換到作品時，停止語音導覽播放器');
+            } catch (e) {
+                console.warn('[AudioGuide] 停止語音導覽播放器失敗:', e);
+            }
+        }
+
         // 顯示作品詳情時，隱藏手機版 headerBody
         toggleHeaderBody(false);
 
@@ -1683,16 +2406,92 @@
                 content.style.display = 'flex';
                 content.classList.add('active');
 
+                // 先停止並歸零其他作品
+                for (let i = 1; i <= 9; i++) {
+                    if (i !== workId) {
+                        const playerId = 'workAudioPlayer' + i;
+                        try {
+                            const player = videojs.getPlayer(playerId);
+                            if (player) {
+                                player.pause();
+                                player.currentTime(0); // 歸零
+                            }
+                        } catch (e) {
+                            // 忽略錯誤
+                        }
+
+                        // 重置其他作品的 Swiper
+                        if (window.workSwipers && window.workSwipers[i]) {
+                            try {
+                                window.workSwipers[i].slideTo(0);
+                            } catch (e) {
+                                // 忽略錯誤
+                            }
+                        }
+                        if (i === 1 && window.workSwipers && window.workSwipers[i + 'Mobile']) {
+                            try {
+                                window.workSwipers[i + 'Mobile'].slideTo(0);
+                            } catch (e) {
+                                // 忽略錯誤
+                            }
+                        }
+                    }
+                }
+
                 // 初始化該作品的播放器
+                // 使用更長的延遲，確保 DOM 完全渲染且元素已顯示
                 setTimeout(() => {
-                    initWorkPlayer(workId);
-                }, 100);
+                    // 再次確認元素已顯示
+                    if (content.style.display === 'flex' || content.style.display === 'block') {
+                        initWorkPlayer(workId);
+                    } else {
+                        // 如果還沒顯示，再等一會兒
+                        setTimeout(() => {
+                            initWorkPlayer(workId);
+                        }, 200);
+                    }
+                }, 300);
 
                 // 初始化該作品的 Swiper（如果有）
                 // 使用 requestAnimationFrame 確保 DOM 完全渲染
                 requestAnimationFrame(() => {
                     setTimeout(() => {
                         initWorkSwiper(workId);
+
+                        // 確保當前作品也是從頭開始（歸零），然後自動播放
+                        const playerId = 'workAudioPlayer' + workId;
+                        try {
+                            const player = videojs.getPlayer(playerId);
+                            if (player) {
+                                player.currentTime(0);
+                                // 歸零後自動播放
+                                setTimeout(function () {
+                                    if (player.readyState() >= 2) {
+                                        player.play().catch(function (err) {
+                                            console.warn('作品播放器自動播放失敗（可能是瀏覽器政策限制）:', err);
+                                        });
+                                    } else {
+                                        player.on('loadedmetadata', function () {
+                                            player.play().catch(function (err) {
+                                                console.warn('作品播放器自動播放失敗（可能是瀏覽器政策限制）:', err);
+                                            });
+                                        });
+                                    }
+                                }, 100);
+                            }
+                        } catch (e) {
+                            // 忽略錯誤
+                        }
+
+                        // 確保 Swiper 在第一個 slide
+                        const swiperKey = (workId === 1 && document.getElementById('workSwiper1Mobile')) ? workId + 'Mobile' : workId;
+                        if (window.workSwipers && window.workSwipers[swiperKey]) {
+                            try {
+                                window.workSwipers[swiperKey].slideTo(0);
+                            } catch (e) {
+                                // 忽略錯誤
+                            }
+                        }
                     }, 200);
                 });
 
@@ -1808,16 +2607,40 @@
             const hashInfo = getTabFromHash();
             const wrapper = document.querySelector('.wrapper');
 
+            console.log('[History] handleRouteChange 開始', {
+                hashInfo: hashInfo,
+                currentHash: window.location.hash,
+                currentLang: currentLang,
+                targetLang: hashInfo.lang,
+                targetTab: hashInfo.tab
+            });
+
             // 更新語言（如果 hash 中有語言資訊，且與當前語言不同）
+            // 注意：這裡只更新語言變數和 UI，不更新 hash，因為 hash 已經改變了
+            // hash 的更新應該由 switchLanguage 函數處理（通過 hashchange 事件監聽器）
             if (hashInfo.lang !== currentLang) {
+                console.log('[History] handleRouteChange: 語言變化', {
+                    from: currentLang,
+                    to: hashInfo.lang,
+                    note: '只更新語言變數和 UI，不更新 hash'
+                });
                 // 只更新語言，不更新 hash（因為 hash 已經改變了）
                 currentLang = hashInfo.lang;
                 applyTranslations(hashInfo.lang);
                 document.documentElement.setAttribute('data-lang', hashInfo.lang);
                 // 重新載入音訊檔案（根據新語言）
                 reloadAudioForLanguage(hashInfo.lang);
+            } else {
+                console.log('[History] handleRouteChange: 語言無變化', {
+                    currentLang: currentLang,
+                    hashLang: hashInfo.lang
+                });
             }
 
+            console.log('[History] handleRouteChange: 切換 tab', {
+                targetTab: hashInfo.tab,
+                currentHash: window.location.hash
+            });
             switchTab(hashInfo.tab, false); // 不更新 hash，因為已經改變了
 
             // 如果是作品詳情，顯示對應作品
@@ -1847,16 +2670,42 @@
         }
 
         // 監聽 hash 變化（瀏覽器前進/後退按鈕 - hashchange 事件）
-        window.addEventListener('hashchange', function () {
+        // 注意：這個監聽器在 capture phase 之後執行（因為沒有指定 capture: true）
+        window.addEventListener('hashchange', function (e) {
+            console.log('[History] hashchange 事件觸發 (路由處理)', {
+                oldURL: e.oldURL,
+                newURL: e.newURL,
+                currentHash: window.location.hash,
+                isUpdatingHash: window._isUpdatingHash,
+                isPopstateEvent: window._isPopstateEvent,
+                stackTrace: new Error().stack
+            });
+
             // 如果是由 updateHash 觸發的，不處理（避免重複處理）
             if (window._isUpdatingHash) {
+                console.log('[History] hashchange (路由處理): 由 updateHash 觸發，跳過處理');
                 return;
             }
+
+            // 如果是 popstate 事件觸發的，也不處理（因為 popstate 會自己處理）
+            if (window._isPopstateEvent) {
+                console.log('[History] hashchange (路由處理): 由 popstate 觸發，跳過處理');
+                return;
+            }
+
+            console.log('[History] hashchange (路由處理): 處理路由變化');
             handleRouteChange();
         });
 
         // 監聽 popstate 事件（當使用 pushState 時，瀏覽器前進/後退會觸發此事件）
         window.addEventListener('popstate', function (e) {
+            console.log('[History] popstate 事件觸發', {
+                state: e.state,
+                currentHash: window.location.hash,
+                currentUrl: window.location.href,
+                historyLength: history.length
+            });
+
             // 標記這是 popstate 事件，避免在 updateHash 中重複觸發 hashchange
             window._isPopstateEvent = true;
 
@@ -1864,10 +2713,14 @@
             // 注意：當使用 pushState 更新 hash 時，瀏覽器會自動更新 window.location.hash
             // 但 popstate 事件可能在 hash 更新之前觸發，所以我們需要延遲處理
             setTimeout(function () {
+                console.log('[History] popstate: 處理路由變化', {
+                    hash: window.location.hash,
+                    state: history.state
+                });
                 handleRouteChange();
                 // 清除標記
                 window._isPopstateEvent = false;
-            }, 0);
+            }, 50); // 增加延遲時間，確保 hash 已更新
         });
 
         // 頁面載入時根據 hash 切換 tab
@@ -1918,12 +2771,6 @@
     function initWorkBlink() {
         const workLinks = document.querySelectorAll('.mapUnit a[class^="work"]');
 
-        // 確保所有元素一開始都是可見的
-        workLinks.forEach((link) => {
-            link.style.opacity = '0.5';
-            link.style.transform = 'scale(1)';
-        });
-
         // 等待一小段時間後再啟動動畫，確保頁面已完全載入
         setTimeout(function () {
             workLinks.forEach((link, index) => {
@@ -1932,12 +2779,12 @@
                 // 為每個作品生成隨機的動畫持續時間（2.5-3.5秒之間）
                 const randomDuration = 2.5 + Math.random() * 1;
 
-                // 設置動畫延遲和持續時間
-                link.style.animationDelay = randomDelay + 's';
-                link.style.animationDuration = randomDuration + 's';
+                // 使用 CSS 變數設置動畫延遲和持續時間（這些變數會被 ::after 偽元素使用）
+                link.style.setProperty('--blink-delay', randomDelay + 's');
+                link.style.setProperty('--blink-duration', randomDuration + 's');
 
-                // 啟動動畫
-                link.style.animationPlayState = 'running';
+                // 添加 .blinking 類名來啟動動畫（::after 偽元素會響應這個類名）
+                link.classList.add('blinking');
             });
         }, 300); // 300ms 後啟動動畫，確保頁面已穩定
     }
@@ -2018,10 +2865,27 @@
      * @param {Object} player - Video.js 播放器實例
      */
     function setupAudioPlayerIcon(player) {
-        if (!player || !player.controlBar) return;
+        console.log('[Icon] setupAudioPlayerIcon 被調用', {
+            playerExists: !!player,
+            controlBarExists: !!(player && player.controlBar),
+            paused: player ? player.paused() : 'N/A'
+        });
+
+        if (!player || !player.controlBar) {
+            console.warn('[Icon] 播放器或控制欄不存在');
+            return;
+        }
 
         const playButton = player.controlBar.playToggle.el();
-        if (!playButton) return;
+        if (!playButton) {
+            console.warn('[Icon] 播放按鈕不存在');
+            return;
+        }
+
+        console.log('[Icon] 播放按鈕已找到', {
+            playButtonExists: !!playButton,
+            innerHTML: playButton.innerHTML.substring(0, 100)
+        });
 
         // 確保按鈕可以點擊
         playButton.style.cursor = 'pointer';
@@ -2030,6 +2894,7 @@
         // 只在第一次設置時清空內容
         let playIcon = playButton.querySelector('.custom-play-icon');
         if (!playIcon) {
+            console.log('[Icon] 創建新的圖示元素');
             // 移除所有預設內容和樣式
             playButton.innerHTML = '';
 
@@ -2047,10 +2912,20 @@
             playIcon = document.createElement('img');
             playIcon.className = 'custom-play-icon';
             playButton.appendChild(playIcon);
+            console.log('[Icon] 圖示元素已創建並添加到按鈕');
+        } else {
+            console.log('[Icon] 使用現有的圖示元素');
         }
 
         // 更新圖示屬性
-        playIcon.src = player.paused() ? 'images/icon-play.svg' : 'images/icon-stop.svg';
+        const iconSrc = player.paused() ? 'images/icon-play.svg' : 'images/icon-stop.svg';
+        console.log('[Icon] 更新圖示', {
+            paused: player.paused(),
+            iconSrc: iconSrc,
+            playIconExists: !!playIcon
+        });
+
+        playIcon.src = iconSrc;
         playIcon.alt = player.paused() ? '播放' : '暫停';
         playIcon.style.width = '50px';
         playIcon.style.height = '50px';
@@ -2058,25 +2933,106 @@
         playIcon.style.visibility = 'visible';
         playIcon.style.opacity = '1';
         playIcon.style.pointerEvents = 'none'; // 讓點擊事件穿透到按鈕
+        playIcon.style.position = 'relative';
+        playIcon.style.zIndex = '10';
+
+        // 確保按鈕容器也正確設置
+        playButton.style.display = 'flex';
+        playButton.style.alignItems = 'center';
+        playButton.style.justifyContent = 'center';
+        playButton.style.width = '50px';
+        playButton.style.height = '50px';
+        playButton.style.position = 'relative';
+        playButton.style.zIndex = '10';
+
+        // 驗證圖示是否正確設置
+        setTimeout(() => {
+            const verifyIcon = playButton.querySelector('.custom-play-icon');
+            const playButtonStyle = window.getComputedStyle(playButton);
+            const iconStyle = verifyIcon ? window.getComputedStyle(verifyIcon) : null;
+
+            console.log('[Icon] 驗證圖示設置', {
+                iconFound: !!verifyIcon,
+                iconSrc: verifyIcon ? verifyIcon.src : 'N/A',
+                iconDisplay: iconStyle ? iconStyle.display : 'N/A',
+                iconVisibility: iconStyle ? iconStyle.visibility : 'N/A',
+                iconOpacity: iconStyle ? iconStyle.opacity : 'N/A',
+                iconWidth: iconStyle ? iconStyle.width : 'N/A',
+                iconHeight: iconStyle ? iconStyle.height : 'N/A',
+                playButtonDisplay: playButtonStyle.display,
+                playButtonVisibility: playButtonStyle.visibility,
+                playButtonOpacity: playButtonStyle.opacity,
+                playButtonWidth: playButtonStyle.width,
+                playButtonHeight: playButtonStyle.height,
+                playButtonPosition: playButtonStyle.position,
+                playButtonZIndex: playButtonStyle.zIndex,
+                playButtonParent: playButton.parentElement ? playButton.parentElement.className : 'N/A'
+            });
+
+            // 檢查是否有其他元素遮擋
+            if (verifyIcon) {
+                const rect = verifyIcon.getBoundingClientRect();
+                console.log('[Icon] 圖示位置信息', {
+                    top: rect.top,
+                    left: rect.left,
+                    width: rect.width,
+                    height: rect.height,
+                    visible: rect.width > 0 && rect.height > 0
+                });
+            }
+        }, 100);
     }
 
     function initVideoPlayer() {
+        console.log('[AudioGuide] initVideoPlayer 開始執行');
+
         // 檢查 Video.js 是否已載入
         if (typeof videojs === 'undefined') {
-            console.warn('Video.js is not loaded');
+            console.warn('[AudioGuide] Video.js is not loaded');
             return;
         }
 
         const playerElement = document.getElementById('audioVideoPlayer');
         if (!playerElement) {
+            console.warn('[AudioGuide] 找不到 audioVideoPlayer 元素');
             return;
         }
 
+        console.log('[AudioGuide] audioVideoPlayer 元素已找到');
+
         // 檢查 Video.js 是否已經初始化了這個元素
         const existingPlayer = videojs.getPlayer('audioVideoPlayer');
+        console.log('[AudioGuide] 檢查播放器是否已存在', {
+            existingPlayer: !!existingPlayer,
+            windowAudioVideoPlayer: !!window.audioVideoPlayer,
+            hash: window.location.hash
+        });
+
         if (existingPlayer) {
+            console.log('[AudioGuide] 播放器已存在，使用現有播放器');
             // 播放器已經存在，直接使用並設置圖示
             window.audioVideoPlayer = existingPlayer;
+
+            // 確保音訊來源已設置（根據當前語言）
+            const mainAudioSrc = getMainAudioFile(currentLang);
+            const currentSrc = existingPlayer.src();
+            const currentSrcString = typeof currentSrc === 'string' ? currentSrc : (currentSrc && currentSrc.src ? currentSrc.src : '');
+
+            console.log('[AudioGuide] 播放器已存在，檢查音訊來源', {
+                currentSrc: currentSrcString,
+                targetSrc: mainAudioSrc,
+                needsReload: currentSrcString !== mainAudioSrc
+            });
+
+            // 如果音訊來源不正確，重新設置
+            if (currentSrcString !== mainAudioSrc && currentSrcString !== mainAudioSrc.replace(/^images\//, '')) {
+                console.log('[AudioGuide] 重新設置音訊來源', mainAudioSrc);
+                existingPlayer.src({
+                    type: 'audio/mpeg',
+                    src: mainAudioSrc
+                });
+            }
+
             // 確保自定義圖示已設置
             if (existingPlayer.readyState() >= 1) {
                 // 播放器已就緒，立即設置
@@ -2087,15 +3043,145 @@
                     setupAudioPlayerIcon(existingPlayer);
                 });
             }
+
+            // 檢查是否在語音導覽頁面，如果是則自動播放
+            const isAudioTab = function () {
+                const hash = window.location.hash;
+                if (hash.includes('audio')) {
+                    return true;
+                }
+                const audioContainer = document.querySelector('div[data-content="audio"]');
+                return audioContainer && audioContainer.style.display !== 'none';
+            };
+
+            if (isAudioTab()) {
+                // 確保播放時間為 0
+                try {
+                    if (existingPlayer.currentTime() > 0) {
+                        existingPlayer.currentTime(0);
+                        console.log('[AudioGuide] 播放器已存在，重置播放時間為 0');
+                    }
+                } catch (e) {
+                    console.warn('[AudioGuide] 重置播放時間失敗:', e);
+                }
+
+                // 延遲播放，確保頁面已切換
+                setTimeout(function () {
+                    // 確保圖示已設置
+                    setupAudioPlayerIcon(existingPlayer);
+
+                    const tryPlay = () => {
+                        console.log('[AudioGuide] 嘗試播放（播放器已存在）', {
+                            readyState: existingPlayer.readyState(),
+                            paused: existingPlayer.paused(),
+                            src: existingPlayer.src(),
+                            currentTime: existingPlayer.currentTime()
+                        });
+
+                        // 再次確保播放時間為 0
+                        try {
+                            if (existingPlayer.currentTime() > 0) {
+                                existingPlayer.currentTime(0);
+                            }
+                        } catch (e) {
+                            // 忽略錯誤
+                        }
+
+                        if (existingPlayer.readyState() >= 2) {
+                            // 音訊已載入，直接播放
+                            existingPlayer.play().then(() => {
+                                console.log('[AudioGuide] 播放成功（播放器已存在）');
+                                // 播放成功後更新圖示
+                                setupAudioPlayerIcon(existingPlayer);
+                            }).catch(function (err) {
+                                console.warn('[AudioGuide] 自動播放失敗（可能是瀏覽器政策限制）:', err);
+                                // 播放失敗後也要更新圖示
+                                setupAudioPlayerIcon(existingPlayer);
+                            });
+                        } else {
+                            console.log('[AudioGuide] 音訊尚未載入，等待載入（播放器已存在）', {
+                                readyState: existingPlayer.readyState()
+                            });
+                            // 等待音訊載入
+                            const onCanPlay = () => {
+                                // 再次確保播放時間為 0
+                                try {
+                                    if (existingPlayer.currentTime() > 0) {
+                                        existingPlayer.currentTime(0);
+                                    }
+                                } catch (e) {
+                                    // 忽略錯誤
+                                }
+
+                                console.log('[AudioGuide] 音訊載入完成，開始播放（播放器已存在）');
+                                existingPlayer.play().then(() => {
+                                    console.log('[AudioGuide] 播放成功（播放器已存在）');
+                                    // 播放成功後更新圖示
+                                    setupAudioPlayerIcon(existingPlayer);
+                                }).catch(function (err) {
+                                    console.warn('[AudioGuide] 自動播放失敗（可能是瀏覽器政策限制）:', err);
+                                    // 播放失敗後也要更新圖示
+                                    setupAudioPlayerIcon(existingPlayer);
+                                });
+                                existingPlayer.off('canplay', onCanPlay);
+                                existingPlayer.off('loadedmetadata', onCanPlay);
+                            };
+                            existingPlayer.on('canplay', onCanPlay);
+                            existingPlayer.on('loadedmetadata', onCanPlay);
+                        }
+                    };
+                    tryPlay();
+                }, 500);
+            }
+
+            // 頁面載入時，如果直接進入 audio tab，確保播放器已初始化並自動播放
+            setTimeout(() => {
+                const hashInfo = getTabFromHash();
+                if (hashInfo.tab === 'audio' && isAudioTab()) {
+                    console.log('[AudioGuide] 頁面載入時檢測到 audio tab（播放器已存在），確保自動播放');
+                    // 確保播放時間為 0
+                    try {
+                        if (existingPlayer.currentTime() > 0) {
+                            existingPlayer.currentTime(0);
+                            console.log('[AudioGuide] 頁面載入時重置播放時間為 0（播放器已存在）');
+                        }
+                    } catch (e) {
+                        // 忽略錯誤
+                    }
+                    // 確保圖示已設置
+                    setupAudioPlayerIcon(existingPlayer);
+                    // 嘗試播放
+                    if (existingPlayer.readyState() >= 2) {
+                        existingPlayer.play().then(() => {
+                            console.log('[AudioGuide] 頁面載入時播放成功（播放器已存在）');
+                            setupAudioPlayerIcon(existingPlayer);
+                        }).catch(function (err) {
+                            console.warn('[AudioGuide] 頁面載入時自動播放失敗:', err);
+                            setupAudioPlayerIcon(existingPlayer);
+                        });
+                    } else {
+                        existingPlayer.on('canplay', function () {
+                            existingPlayer.play().then(() => {
+                                console.log('[AudioGuide] 頁面載入時播放成功（播放器已存在，等待載入）');
+                                setupAudioPlayerIcon(existingPlayer);
+                            }).catch(function (err) {
+                                console.warn('[AudioGuide] 頁面載入時自動播放失敗:', err);
+                                setupAudioPlayerIcon(existingPlayer);
+                            });
+                        });
+                    }
+                }
+            }, 1500);
+
             return;
         }
 
         // 檢查播放器是否已經初始化，避免重複初始化
         if (window.audioVideoPlayer) {
             // 播放器已經初始化，確保圖示已設置
-            if (window.audioVideoPlayer.readyState() >= 1) {
+            if (typeof window.audioVideoPlayer.readyState === 'function' && window.audioVideoPlayer.readyState() >= 1) {
                 setupAudioPlayerIcon(window.audioVideoPlayer);
-            } else {
+            } else if (typeof window.audioVideoPlayer.ready === 'function') {
                 window.audioVideoPlayer.ready(function () {
                     setupAudioPlayerIcon(window.audioVideoPlayer);
                 });
@@ -2134,7 +3220,7 @@
         // 儲存播放器實例供後續使用
         window.audioVideoPlayer = player;
 
-        // 預設載入音訊檔案（01.mp3）
+        // 預設載入音訊檔案（00.mp3）
         // 監聽播放器就緒事件
         player.ready(function () {
 
@@ -2155,10 +3241,132 @@
 
             // 設定預設音訊來源（根據當前語言）
             const mainAudioSrc = getMainAudioFile(currentLang);
+            console.log('[AudioGuide] 設置音訊來源', {
+                lang: currentLang,
+                audioSrc: mainAudioSrc
+            });
             player.src({
                 type: 'audio/mpeg',
                 src: mainAudioSrc
             });
+
+            // 監聽音訊載入事件
+            player.on('loadstart', function () {
+                console.log('[AudioGuide] 開始載入音訊', mainAudioSrc);
+            });
+            player.on('loadeddata', function () {
+                console.log('[AudioGuide] 音訊資料已載入', {
+                    readyState: player.readyState(),
+                    duration: player.duration()
+                });
+            });
+            player.on('loadedmetadata', function () {
+                console.log('[AudioGuide] 音訊 metadata 已載入', {
+                    readyState: player.readyState(),
+                    duration: player.duration()
+                });
+            });
+            player.on('canplay', function () {
+                console.log('[AudioGuide] 音訊可以播放', {
+                    readyState: player.readyState(),
+                    duration: player.duration()
+                });
+            });
+            player.on('canplaythrough', function () {
+                console.log('[AudioGuide] 音訊可以完整播放', {
+                    readyState: player.readyState(),
+                    duration: player.duration()
+                });
+            });
+
+            // 檢查是否在語音導覽頁面（通過檢查 hash 或 tab 顯示狀態）
+            const isAudioTab = function () {
+                const hash = window.location.hash;
+                if (hash.includes('audio')) {
+                    return true;
+                }
+                const audioContainer = document.querySelector('div[data-content="audio"]');
+                return audioContainer && audioContainer.style.display !== 'none';
+            };
+
+            // 監聽音訊載入完成後自動播放（僅在語音導覽頁面）
+            const tryAutoPlay = () => {
+                const isAudio = isAudioTab();
+                console.log('[AudioGuide] initVideoPlayer: 嘗試自動播放', {
+                    isAudioTab: isAudio,
+                    readyState: player.readyState(),
+                    paused: player.paused()
+                });
+
+                if (isAudio) {
+                    // 確保圖示已設置
+                    setupAudioPlayerIcon(player);
+
+                    if (player.readyState() >= 2) {
+                        // 音訊已載入，直接播放
+                        console.log('[AudioGuide] initVideoPlayer: 音訊已載入，開始播放');
+                        player.play().then(() => {
+                            console.log('[AudioGuide] initVideoPlayer: 播放成功');
+                            // 播放成功後更新圖示
+                            setupAudioPlayerIcon(player);
+                        }).catch(function (err) {
+                            console.warn('[AudioGuide] initVideoPlayer: 自動播放失敗（可能是瀏覽器政策限制）:', err);
+                            // 播放失敗後也要更新圖示
+                            setupAudioPlayerIcon(player);
+                        });
+                    } else {
+                        console.log('[AudioGuide] initVideoPlayer: 音訊尚未載入，等待載入...', {
+                            readyState: player.readyState()
+                        });
+                        // 等待音訊載入
+                        const onCanPlay = () => {
+                            if (isAudioTab()) {
+                                console.log('[AudioGuide] initVideoPlayer: 音訊載入完成，開始播放');
+                                player.play().then(() => {
+                                    console.log('[AudioGuide] initVideoPlayer: 播放成功');
+                                    // 播放成功後更新圖示
+                                    setupAudioPlayerIcon(player);
+                                }).catch(function (err) {
+                                    console.warn('[AudioGuide] initVideoPlayer: 自動播放失敗（可能是瀏覽器政策限制）:', err);
+                                    // 播放失敗後也要更新圖示
+                                    setupAudioPlayerIcon(player);
+                                });
+                            }
+                            player.off('canplay', onCanPlay);
+                            player.off('loadedmetadata', onCanPlay);
+                        };
+                        player.on('canplay', onCanPlay);
+                        player.on('loadedmetadata', onCanPlay);
+                    }
+                }
+            };
+
+            player.on('loadedmetadata', tryAutoPlay);
+            player.on('canplay', tryAutoPlay);
+
+            // 如果音訊已經載入，立即播放（僅在語音導覽頁面）
+            // 延遲更長時間，確保頁面切換已完成
+            setTimeout(tryAutoPlay, 500);
+
+            // 頁面載入時，如果直接進入 audio tab，確保播放器已初始化並自動播放
+            // 這個檢查會在 initTabSwitcher 之後執行
+            setTimeout(() => {
+                const hashInfo = getTabFromHash();
+                if (hashInfo.tab === 'audio') {
+                    console.log('[AudioGuide] 頁面載入時檢測到 audio tab，確保播放器已初始化');
+                    // 確保播放時間為 0
+                    try {
+                        if (player.currentTime() > 0) {
+                            player.currentTime(0);
+                            console.log('[AudioGuide] 頁面載入時重置播放時間為 0');
+                        }
+                    } catch (e) {
+                        // 忽略錯誤
+                    }
+                    // 再次嘗試自動播放
+                    tryAutoPlay();
+                }
+            }, 1000);
 
             // 監聽錯誤事件
             player.on('error', function () {
@@ -2181,22 +3389,94 @@
             // 使用事件委派，在控制欄上監聽點擊事件
             const controlBarEl = player.controlBar.el();
             if (controlBarEl) {
+                // 移除舊的事件監聽器（如果有的話）
+                controlBarEl.removeEventListener('click', arguments.callee);
+
                 controlBarEl.addEventListener('click', function (e) {
+                    console.log('[AudioGuide] 控制欄點擊事件', {
+                        target: e.target,
+                        targetClass: e.target.className,
+                        targetTag: e.target.tagName
+                    });
+
                     const playButton = player.controlBar.playToggle.el();
                     // 檢查 e.target 是否為有效的 DOM 節點
                     const target = e.target && e.target.nodeType === 1 ? e.target : null;
-                    if (playButton && target && (playButton.contains(target) || target.closest('.vjs-play-control'))) {
+
+                    // 檢查是否點擊了播放按鈕或圖示
+                    const isPlayButtonClick = playButton && target && (
+                        playButton.contains(target) ||
+                        target.closest('.vjs-play-control') ||
+                        target.classList.contains('custom-play-icon') ||
+                        target.closest('.custom-play-icon')
+                    );
+
+                    console.log('[AudioGuide] 點擊檢查', {
+                        isPlayButtonClick: isPlayButtonClick,
+                        playButtonExists: !!playButton,
+                        targetExists: !!target,
+                        paused: player.paused(),
+                        readyState: player.readyState()
+                    });
+
+                    if (isPlayButtonClick) {
                         e.preventDefault();
                         e.stopPropagation();
+                        console.log('[AudioGuide] 處理播放按鈕點擊', {
+                            paused: player.paused(),
+                            readyState: player.readyState()
+                        });
+
                         if (player.paused()) {
-                            player.play().catch(function (err) {
-                                console.error('播放錯誤:', err);
-                            });
+                            if (player.readyState() >= 2) {
+                                player.play().then(() => {
+                                    console.log('[AudioGuide] 手動播放成功');
+                                    setupAudioPlayerIcon(player);
+                                }).catch(function (err) {
+                                    console.error('[AudioGuide] 播放錯誤:', err);
+                                    setupAudioPlayerIcon(player);
+                                });
+                            } else {
+                                console.warn('[AudioGuide] 音訊尚未載入，無法播放', {
+                                    readyState: player.readyState()
+                                });
+                            }
                         } else {
                             player.pause();
+                            console.log('[AudioGuide] 已暫停');
+                            setupAudioPlayerIcon(player);
                         }
                     }
                 }, true); // 使用 capture 階段確保優先執行
+
+                // 也直接在播放按鈕上綁定事件
+                const playButton = player.controlBar.playToggle.el();
+                if (playButton) {
+                    playButton.addEventListener('click', function (e) {
+                        console.log('[AudioGuide] 播放按鈕直接點擊');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (player.paused()) {
+                            if (player.readyState() >= 2) {
+                                player.play().then(() => {
+                                    console.log('[AudioGuide] 手動播放成功（直接點擊）');
+                                    setupAudioPlayerIcon(player);
+                                }).catch(function (err) {
+                                    console.error('[AudioGuide] 播放錯誤（直接點擊）:', err);
+                                    setupAudioPlayerIcon(player);
+                                });
+                            } else {
+                                console.warn('[AudioGuide] 音訊尚未載入，無法播放（直接點擊）', {
+                                    readyState: player.readyState()
+                                });
+                            }
+                        } else {
+                            player.pause();
+                            console.log('[AudioGuide] 已暫停（直接點擊）');
+                            setupAudioPlayerIcon(player);
+                        }
+                    });
+                }
             }
 
             // 立即設置圖示
@@ -2246,6 +3526,63 @@
 
                 // 確保圖示正確
                 setupAudioPlayerIcon(player);
+            });
+
+            // 頁面載入時，如果直接進入 audio tab，確保播放器已初始化並自動播放
+            // 這個檢查會在 initTabSwitcher 之後執行（延遲更長時間）
+            const checkAndAutoPlayOnLoad = () => {
+                const hashInfo = getTabFromHash();
+                const isAudio = hashInfo.tab === 'audio';
+                console.log('[AudioGuide] 頁面載入時檢查 audio tab', {
+                    hashInfo: hashInfo,
+                    isAudio: isAudio,
+                    readyState: player.readyState(),
+                    paused: player.paused()
+                });
+
+                if (isAudio) {
+                    console.log('[AudioGuide] 頁面載入時檢測到 audio tab，確保播放器已初始化並自動播放');
+                    // 確保播放時間為 0
+                    try {
+                        if (player.currentTime() > 0) {
+                            player.currentTime(0);
+                            console.log('[AudioGuide] 頁面載入時重置播放時間為 0');
+                        }
+                    } catch (e) {
+                        console.warn('[AudioGuide] 重置播放時間失敗:', e);
+                    }
+                    // 確保圖示已設置
+                    setupAudioPlayerIcon(player);
+                    // 再次嘗試自動播放
+                    tryAutoPlay();
+                }
+            };
+
+            // 立即檢查一次
+            setTimeout(checkAndAutoPlayOnLoad, 1500);
+            // 再檢查一次，確保播放器已完全初始化
+            setTimeout(checkAndAutoPlayOnLoad, 2500);
+
+            // 監聽音訊載入完成事件，如果頁面載入時就在 audio tab，自動播放
+            player.on('canplaythrough', function () {
+                const hashInfo = getTabFromHash();
+                if (hashInfo.tab === 'audio') {
+                    console.log('[AudioGuide] 音訊載入完成，頁面載入時在 audio tab，嘗試自動播放');
+                    try {
+                        if (player.currentTime() > 0) {
+                            player.currentTime(0);
+                        }
+                        player.play().then(() => {
+                            console.log('[AudioGuide] 頁面載入時自動播放成功（canplaythrough）');
+                            setupAudioPlayerIcon(player);
+                        }).catch(function (err) {
+                            console.warn('[AudioGuide] 頁面載入時自動播放失敗（canplaythrough）:', err);
+                            setupAudioPlayerIcon(player);
+                        });
+                    } catch (e) {
+                        console.warn('[AudioGuide] 頁面載入時自動播放錯誤（canplaythrough）:', e);
+                    }
+                }
             });
         });
 
@@ -2516,14 +3853,49 @@
     }
 
     // 監聽 hash 變化（處理語言切換）
-    // 注意：這個監聽器會在現有的 hashchange 監聽器之前執行
-    window.addEventListener('hashchange', function () {
+    // 注意：這個監聽器會在現有的 hashchange 監聽器之前執行（capture phase）
+    window.addEventListener('hashchange', function (e) {
+        console.log('[History] hashchange 事件觸發 (語言切換 - capture)', {
+            oldURL: e.oldURL,
+            newURL: e.newURL,
+            currentHash: window.location.hash,
+            isUpdatingHash: window._isUpdatingHash,
+            isPopstateEvent: window._isPopstateEvent
+        });
+
+        // 如果是由 updateHash 觸發的，不處理（避免重複處理）
+        if (window._isUpdatingHash) {
+            console.log('[History] hashchange (語言切換): 由 updateHash 觸發，跳過處理');
+            return;
+        }
+
+        // 如果是 popstate 事件觸發的，也不處理（因為 popstate 會自己處理）
+        if (window._isPopstateEvent) {
+            console.log('[History] hashchange (語言切換): 由 popstate 觸發，跳過處理');
+            return;
+        }
+
         const hashInfo = getTabFromHash();
+        console.log('[History] hashchange (語言切換): 檢查語言', {
+            hashInfo: hashInfo,
+            currentLang: currentLang,
+            hashLang: hashInfo.lang,
+            needsSwitch: (hashInfo.lang === 'en' && currentLang !== 'en') || (hashInfo.lang === 'zh' && currentLang !== 'zh')
+        });
+
         // 如果 hash 中的語言與當前語言不同，切換語言
+        // 使用 replace 模式，不建立新的歷史記錄
         if (hashInfo.lang === 'en' && currentLang !== 'en') {
-            switchLanguage('en');
+            console.log('[History] hashchange (語言切換): 切換到英文');
+            switchLanguage('en', true); // 會使用 replace 模式
         } else if (hashInfo.lang === 'zh' && currentLang !== 'zh') {
-            switchLanguage('zh');
+            console.log('[History] hashchange (語言切換): 切換到中文');
+            switchLanguage('zh', true); // 會使用 replace 模式
+        } else {
+            console.log('[History] hashchange (語言切換): 語言已匹配，無需切換', {
+                hashLang: hashInfo.lang,
+                currentLang: currentLang
+            });
         }
     }, true); // 使用 capture phase 確保先執行
 

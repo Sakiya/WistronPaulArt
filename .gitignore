@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Source maps (不需要部署到生產環境)
+*.map
+
+# Node modules (如果有使用)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 編輯器設定檔
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 臨時檔案
+*.tmp
+*.temp
+.cache/
+
+# 建置產物（如果有）
+dist/
+build/
