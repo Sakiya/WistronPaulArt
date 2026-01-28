@@ -857,9 +857,14 @@
                     // 移除所有 focus 和 active 狀態的發光效果
                     &:focus,
                     &:focus-visible,
-                    &:active {
+                    &:active,
+                    &:focus-within {
                         outline: none !important;
                         box-shadow: none !important;
+                        background: transparent !important; // 移除 focus 時的背景色
+                        background-color: transparent !important;
+                        // 移除點擊瞬間的淺色閃現
+                        -webkit-tap-highlight-color: transparent !important;
                     }
 
                     // 確保觸摸事件可以正確觸發
@@ -895,10 +900,23 @@
                                 transform: translateY(-50%); // 垂直居中對齊進度條
                                 height: 44px; // 觸摸區域高度 44px（符合最小觸摸目標建議）
                                 width: 100%;
-                                background: transparent; // 完全透明，不影響視覺
+                                background: transparent !important; // 完全透明，不影響視覺
                                 pointer-events: auto; // 確保可以接收觸摸事件
                                 z-index: 0; // 在背景層
                                 cursor: pointer;
+                                // 移除點擊瞬間的淺色閃現
+                                -webkit-tap-highlight-color: transparent !important;
+                                // 移除所有狀態的背景色變化
+                                transition: none !important;
+                                -webkit-transition: none !important;
+                            }
+
+                            // 確保偽元素在 active 狀態時也保持透明
+                            &:active::before,
+                            &:focus::before,
+                            &:focus-within::before {
+                                background: transparent !important;
+                                background-color: transparent !important;
                             }
 
                             // 確保進度條本身可以接收觸摸事件
@@ -916,17 +934,29 @@
                         &:focus,
                         &:focus-visible,
                         &:active,
-                        &:focus-within {
+                        &:focus-within,
+                        &:hover {
                             outline: none !important;
                             box-shadow: none !important;
                             border: none !important;
+                            background-color: #125776 !important; // 保持底色，移除 focus/active 時的淺色
+                            background: #125776 !important;
+                            // 移除點擊瞬間的淺色閃現
+                            -webkit-tap-highlight-color: transparent !important;
+                            // 移除過渡效果
+                            transition: none !important;
+                            -webkit-transition: none !important;
                         }
 
-                        // 移除觸摸設備上的 tap highlight
-                        -webkit-tap-highlight-color: transparent;
+                        // 移除觸摸設備上的 tap highlight（防止點擊瞬間閃現淺色）
+                        -webkit-tap-highlight-color: transparent !important;
                         -webkit-touch-callout: none;
                         -webkit-user-select: none;
                         user-select: none;
+
+                        // 移除所有可能的過渡效果，防止閃現
+                        transition: none !important;
+                        -webkit-transition: none !important;
 
                         // 確保觸摸事件可以正確觸發
                         pointer-events: auto;
@@ -953,9 +983,17 @@
                             // 移除 focus 和 active 狀態的發光效果
                             &:focus,
                             &:focus-visible,
-                            &:active {
+                            &:active,
+                            &:hover {
                                 outline: none !important;
                                 box-shadow: none !important;
+                                background-color: #fff !important; // 保持白色，移除 focus/active 時的淺色
+                                background: #fff !important;
+                                // 移除點擊瞬間的淺色閃現
+                                -webkit-tap-highlight-color: transparent !important;
+                                // 移除過渡效果
+                                transition: none !important;
+                                -webkit-transition: none !important;
                             }
 
                             &::before {
@@ -993,16 +1031,37 @@
 
                         .vjs-load-progress {
                             // 緩衝進度條（載入進度）
-                            // background-color: #125776;
-                            background: none;
+                            background-color: #125776;
                             height: 4px;
                             position: absolute; // Video.js 默認是 absolute
                             top: 0; // 明確設置頂部位置
                             left: 0;
 
+                            // 覆蓋 Video.js 默認的淺藍灰色（rgba(115, 133, 159, 0.75)）
+                            div {
+                                background-color: #125776; // 與緩衝條容器顏色一致
+
+                                // 移除 focus/active 狀態的淺色（防止點擊瞬間閃現）
+                                &:focus,
+                                &:focus-visible,
+                                &:active,
+                                &:hover {
+                                    background-color: #125776 !important;
+                                    background: #125776 !important;
+                                    // 移除過渡效果
+                                    transition: none !important;
+                                    -webkit-transition: none !important;
+                                }
+                            }
+
                             // 手機版：對齊觸摸層
                             @include screen_960 {
                                 top: 0; // 與 .vjs-play-progress 保持一致
+                                background-color: #125776;
+
+                                div {
+                                    background-color: #125776; // 手機版也隱藏
+                                }
                             }
                         }
 
@@ -1209,9 +1268,9 @@
         z-index: 9;
 
         @include screen_960 {
-            top: 95px;
-            width: 24px;
-            height: 24px;
+            top: 98px;
+            width: 22px;
+            height: 22px;
         }
 
         img {
@@ -1342,9 +1401,10 @@
 
                 @include screen_960 {
                     right: 10px;
-                    bottom: 150px;
+                    bottom: 145px;
                     font-size: 12px;
                     letter-spacing: .5em;
+
                 }
             }
 
@@ -1436,6 +1496,16 @@
                 @include screen_960 {
                     padding: 0 20px;
                     margin: 0 auto;
+                    height: 300px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    // 英文版專屬樣式
+                    [data-lang="en"] & {
+                        // 英文段落可能需要調整行高
+                        height: 280px;
+                    }
                 }
 
                 div {
@@ -1465,6 +1535,12 @@
                     @include screen_960 {
                         width: 100%;
                         max-height: 300px;
+
+                        // 英文版專屬樣式
+                        [data-lang="en"] & {
+                            // 英文段落可能需要調整行高
+                            max-height: 280px;
+                        }
                     }
                 }
 
@@ -1515,7 +1591,8 @@
 
             @include screen_960 {
                 margin: 20px auto 0 auto;
-                line-height: 1.7;
+                font-size: 13px;
+                line-height: 1.6;
             }
 
             b {
