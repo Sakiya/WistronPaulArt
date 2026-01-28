@@ -597,10 +597,10 @@
                         line-height: 24px;
                         text-align: center;
 
-                        @include screen_1024 {
-                            width: 8.8%;
-                            height: 8.8%;
-                        }
+                        // @include screen_1024 {
+                        //     width: 8.8%;
+                        //     height: 8.8%;
+                        // }
 
                         &::after {
                             position: absolute;
