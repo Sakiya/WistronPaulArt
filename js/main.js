@@ -818,30 +818,47 @@
         }
 
         // 添加更多參數以改善相容性和功能
+        // 注意：origin 參數應該設置為實際的生產網域，或移除讓 YouTube 自動檢測
+        const currentOrigin = window.location.origin;
+        const productionDomain = 'in-search-of-light.wistronladiesopen.com'; // 生產環境網域
+
+        // 判斷是否為生產環境
+        const isProduction = currentOrigin.includes(productionDomain) ||
+            currentOrigin.includes('wistronladiesopen.com');
+
         const params = new URLSearchParams({
             'autoplay': autoplay ? '1' : '0',
             'rel': '0', // 不顯示相關影片
             'modestbranding': '1', // 減少 YouTube 品牌標識
             'enablejsapi': '1', // 啟用 JavaScript API
-            'origin': window.location.origin, // 允許的來源
             'playsinline': '1', // 在 iOS 上內聯播放
             'iv_load_policy': '3', // 不顯示註解
             'fs': '1', // 允許全螢幕
-            'cc_load_policy': '0' // 不自動顯示字幕
+            'cc_load_policy': '0', // 不自動顯示字幕
+            'widget_referrer': currentOrigin // 用於追蹤和權限檢查
         });
+
+        // 只在生產環境或明確需要時設置 origin
+        // 如果客戶已設置 YouTube 嵌入權限，可以移除 origin 參數讓 YouTube 自動檢測
+        if (isProduction) {
+            params.set('origin', `https://${productionDomain}`);
+        } else {
+            // 開發環境：使用當前 origin，或移除讓 YouTube 自動檢測
+            // params.set('origin', currentOrigin); // 可選：取消註解以在開發環境使用
+        }
 
         return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
     }
 
     // 圖片列表陣列 - 可以自行修改圖片路徑
     const imageList = [
-        'images/popup/images1.png',
-        'images/popup/images2.png',
-        'images/popup/images3.png',
-        'images/popup/images4.png',
-        'images/popup/images5.png',
-        'images/popup/images6.png',
-        'images/popup/images7.png',
+        // 'images/popup/images1.png',
+        // 'images/popup/images2.png',
+        // 'images/popup/images3.png',
+        // 'images/popup/images4.png',
+        // 'images/popup/images5.png',
+        // 'images/popup/images6.png',
+        // 'images/popup/images7.png',
         'images/popup/251229-101.png',
         'images/popup/251229-102.png',
         'images/popup/251229-103.png',
