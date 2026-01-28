@@ -776,6 +776,8 @@
             padding: 0 20px;
             padding-top: 0;
             background-color: transparent;
+            position: relative;
+            z-index: 1; // 確保播放器在問卷調查按鈕下方
 
             // 移除預設的背景
             .vjs-poster {
@@ -825,8 +827,11 @@
 
                     @include screen_960 {
                         position: absolute;
-                        top: 40px;
+                        top: 45px;
                         left: 15px;
+                        // 確保時間顯示不會阻擋進度條的觸摸事件
+                        pointer-events: none;
+                        z-index: 1;
                     }
                 }
 
@@ -844,7 +849,22 @@
 
                     @include screen_960 {
                         min-width: 90%;
+                        // 手機版：確保容器不會阻擋觸摸事件
+                        position: relative;
+                        z-index: 10; // 確保進度條在最上層
                     }
+
+                    // 移除所有 focus 和 active 狀態的發光效果
+                    &:focus,
+                    &:focus-visible,
+                    &:active {
+                        outline: none !important;
+                        box-shadow: none !important;
+                    }
+
+                    // 確保觸摸事件可以正確觸發
+                    pointer-events: auto;
+                    touch-action: pan-x pinch-zoom; // 允許水平拖曳（進度條）和縮放
 
                     .vjs-progress-holder {
                         width: 100%;
@@ -856,11 +876,87 @@
                         margin: 0;
                         position: relative; // 為圓點定位提供參考
 
+                        // 手機版：使用偽元素擴展觸摸區域，視覺保持 4px
+                        @include screen_960 {
+                            // 視覺高度強制保持 4px
+                            height: 4px !important;
+                            min-height: 4px !important;
+                            max-height: 4px !important;
+                            // 確保容器本身不會擴展
+                            overflow: visible; // 允許偽元素超出容器
+
+                            // 使用 ::before 偽元素創建更大的透明觸摸區域（不影響視覺）
+                            &::before {
+                                content: '';
+                                position: absolute;
+                                top: 50%; // 從中心開始
+                                left: 0;
+                                right: 0;
+                                transform: translateY(-50%); // 垂直居中對齊進度條
+                                height: 44px; // 觸摸區域高度 44px（符合最小觸摸目標建議）
+                                width: 100%;
+                                background: transparent; // 完全透明，不影響視覺
+                                pointer-events: auto; // 確保可以接收觸摸事件
+                                z-index: 0; // 在背景層
+                                cursor: pointer;
+                            }
+
+                            // 確保進度條本身可以接收觸摸事件
+                            pointer-events: auto !important;
+                            touch-action: pan-x pinch-zoom; // 允許水平拖曳（進度條）和縮放
+
+                            // 確保進度條內容（播放進度、載入進度等）在觸摸層之上
+                            >* {
+                                position: relative;
+                                z-index: 1;
+                            }
+                        }
+
+                        // 移除所有 focus、active、hover 狀態的發光效果（特別針對手機版）
+                        &:focus,
+                        &:focus-visible,
+                        &:active,
+                        &:focus-within {
+                            outline: none !important;
+                            box-shadow: none !important;
+                            border: none !important;
+                        }
+
+                        // 移除觸摸設備上的 tap highlight
+                        -webkit-tap-highlight-color: transparent;
+                        -webkit-touch-callout: none;
+                        -webkit-user-select: none;
+                        user-select: none;
+
+                        // 確保觸摸事件可以正確觸發
+                        pointer-events: auto;
+
                         .vjs-play-progress {
                             background-color: #fff;
                             height: 4px;
                             border-radius: 2px;
-                            position: relative; // 為圓點定位提供參考
+                            position: absolute; // Video.js 默認是 absolute，保持一致性
+                            top: 0; // 明確設置頂部位置
+                            left: 0;
+
+                            // 手機版：確保播放進度條可以接收觸摸事件，並對齊觸摸層
+                            @include screen_960 {
+                                pointer-events: auto;
+                                touch-action: pan-x; // 允許水平拖曳
+                                // 對齊觸摸層：觸摸層從 50% 開始，高度 44px，所以頂部在 50% - 22px = 2px - 22px = -20px
+                                // 但進度條本身高度 4px，從 0 開始，所以需要向上移動 (44px - 4px) / 2 = 20px 來對齊中心
+                                // 但實際上觸摸層是居中的，進度條也應該居中，所以 top 應該是 0（因為容器高度是 4px）
+                                // 如果用戶發現需要 top: -4px，可能是因為其他樣式影響，我們加上這個修正
+                                top: 0; // 修正對齊問題
+                            }
+
+                            // 移除 focus 和 active 狀態的發光效果
+                            &:focus,
+                            &:focus-visible,
+                            &:active {
+                                outline: none !important;
+                                box-shadow: none !important;
+                            }
 
                             &::before {
                                 display: none;
@@ -879,12 +975,35 @@
                                 border-radius: 50%;
                                 display: block;
                                 z-index: 1;
+
+                                // 移除圓點的發光效果
+                                box-shadow: none !important;
+                                outline: none !important;
+
+                                // 手機版：增加圓點的視覺大小，提升觸摸體驗
+                                @include screen_960 {
+                                    width: 20px; // 增加視覺大小，更容易看到和點擊
+                                    height: 20px;
+                                }
+
+                                // 確保圓點不會阻擋觸摸事件
+                                pointer-events: none; // 讓觸摸事件穿透到進度條
                             }
                         }
 
                         .vjs-load-progress {
-                            background-color: #125776;
+                            // 緩衝進度條（載入進度）
+                            // background-color: #125776;
+                            background: none;
                             height: 4px;
+                            position: absolute; // Video.js 默認是 absolute
+                            top: 0; // 明確設置頂部位置
+                            left: 0;
+
+                            // 手機版：對齊觸摸層
+                            @include screen_960 {
+                                top: 0; // 與 .vjs-play-progress 保持一致
+                            }
                         }
 
                         .vjs-mouse-display {
@@ -911,8 +1030,11 @@
 
                     @include screen_960 {
                         position: absolute;
-                        top: 40px;
+                        top: 45px;
                         right: 15px;
+                        // 確保時間顯示不會阻擋進度條的觸摸事件
+                        pointer-events: none;
+                        z-index: 1;
                     }
                 }
 
@@ -1034,9 +1156,22 @@
 
     .questionnaire {
         position: absolute;
-        top: 65px;
+        top: 75px;
         left: 20px;
-        z-index: 10;
+        z-index: 20; // 提高 z-index，確保在播放器上方
+        pointer-events: auto !important; // 確保可以點擊
+
+        a {
+            display: block;
+            pointer-events: auto !important;
+            position: relative;
+            z-index: 21; // 確保連結在最上層
+
+            img {
+                pointer-events: auto !important;
+                display: block;
+            }
+        }
     }
 }
 
