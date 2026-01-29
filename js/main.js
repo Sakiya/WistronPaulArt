@@ -826,11 +826,9 @@
         }
 
         // 添加更多參數以改善相容性和功能
-        // 注意：origin 參數應該設置為實際的生產網域，或移除讓 YouTube 自動檢測
+        // 不寫入 origin 參數：由瀏覽器自然送 Referer，與開發站一致，避免正式站 153
         const currentOrigin = window.location.origin;
-        const productionDomain = 'in-search-of-light.wistronladiesopen.com'; // 生產環境網域
-
-        // 判斷是否為生產環境
+        const productionDomain = 'in-search-of-light.wistronladiesopen.com';
         const isProduction = currentOrigin.includes(productionDomain) ||
             currentOrigin.includes('wistronladiesopen.com');
 
@@ -846,12 +844,8 @@
             'widget_referrer': currentOrigin // 用於追蹤和權限檢查
         });
 
-        // 只在生產環境或明確需要時設置 origin
-        // 如果客戶已設置 YouTube 嵌入權限，可以移除 origin 參數讓 YouTube 自動檢測
-        const originInUrl = isProduction ? `https://${productionDomain}` : null;
-        if (isProduction) {
-            params.set('origin', originInUrl);
-        }
+        // 不設定 origin：實測正式站寫入 origin 會導致全部瀏覽器 153，改由瀏覽器送 Referer
+        const originInUrl = null;
 
         const fullEmbedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
 
