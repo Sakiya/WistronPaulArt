@@ -847,7 +847,7 @@
         // 不設定 origin：實測正式站寫入 origin 會導致全部瀏覽器 153，改由瀏覽器送 Referer
         const originInUrl = null;
 
-        const fullEmbedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+        const fullEmbedUrl = `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
 
         // 診斷用：僅第一次產生 embed URL 時輸出，請將結果提供給開發人員
         if (!youtubeDiagnosticLogged) {
