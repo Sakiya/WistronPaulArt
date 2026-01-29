@@ -1,4 +1,4 @@
-﻿/**
+/**
 *
 * base
 *
@@ -14,46 +14,25 @@ html {
     position: relative;
 }
 
+// 中英文共用一組：中文字型優先，其後英文 fallback
 body {
     font-family:
-        'Noto Sans',
-        /* Simplified Chinese font by Google */
-        'Arial',
-        /* Fallback English font */
-        'Helvetica Neue',
-        /* macOS English font */
-        Helvetica,
-        /* Fallback English font */
-        sans-serif;
-    /* Final fallback */
-}
-
-body *:lang(zh) {
-    font-family:
         'Noto Sans TC',
-        /* Traditional Chinese font by Google - 自訂字體 */
+        'Noto Sans SC',
+        'Noto Sans',
         'PingFang TC',
-        /* macOS / iOS Traditional Chinese font - 蘋果系統字體 */
         'PingFang SC',
-        /* macOS / iOS Simplified Chinese font - 蘋果系統字體 */
         'Microsoft JhengHei',
-        /* Windows Traditional Chinese font - 微軟系統字體 */
         'Microsoft YaHei',
-        /* Windows Simplified Chinese font - 微軟系統字體 */
         'Source Han Sans TC',
-        /* Adobe 思源黑體 - Android/跨平台 */
         'Source Han Sans SC',
-        /* Adobe 思源黑體簡體 - Android/跨平台 */
         'Heiti SC',
-        /* Legacy macOS Chinese system font - 舊版蘋果字體 */
         'SimHei',
-        /* Windows XP Simplified Chinese - 舊版微軟字體 */
         'STHeiti',
-        /* 華文黑體 - 跨平台 */
-        'Arial',
-        /* Fallback English font */
+        'Helvetica Neue',
+        Helvetica,
+        Arial,
         sans-serif;
-    /* Final fallback */
 }
 
 //-----------------------------------anchor-----------------------------------

@@ -660,16 +660,28 @@
                         &.work3 {
                             top: 32%;
                             left: 39.2%;
+
+                            @include screen_960 {
+                                left: 40.2%;
+                            }
                         }
 
                         &.work4 {
                             top: 32%;
                             left: 60.2%;
+
+                            @include screen_960 {
+                                left: 62.2%;
+                            }
                         }
 
                         &.work5 {
                             top: 32%;
                             left: 78.4%;
+
+                            @include screen_960 {
+                                left: 79.6%;
+                            }
                         }
 
                         &.work6 {
@@ -732,6 +744,7 @@
 
                 @include screen_960 {
                     width: auto;
+                    line-height: 1.4;
                     font-size: 15px; // 手機版保持 15px
                 }
             }
@@ -1245,6 +1258,8 @@
     min-height: 100vh;
     min-height: 100dvh;
     min-height: 100svh;
+    padding-bottom: 130px;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1256,6 +1271,7 @@
         overflow: hidden;
         overflow-x: hidden;
         overflow-y: hidden;
+        padding-bottom: 0;
     }
 
     .closeWorkSwiper {
@@ -1268,9 +1284,15 @@
         z-index: 9;
 
         @include screen_960 {
-            top: 98px;
+            top: 85px;
             width: 22px;
             height: 22px;
+        }
+
+        [data-lang="en"] & {
+            @include screen_960 {
+                top: 93px;
+            }
         }
 
         img {
@@ -1284,7 +1306,7 @@
         display: none;
         animation: fadeIn 0.3s ease-in-out;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         flex-direction: column;
         width: 100%;
         max-width: 1040px;
@@ -1302,6 +1324,7 @@
         }
 
         &.workSwiperContent {
+            position: relative;
             width: 100%;
             height: 100%;
             min-height: 100vh;
@@ -1311,10 +1334,8 @@
             max-width: initial;
             padding: 0;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             flex-direction: column;
-
-
         }
 
         // 作品 Swiper 輪播樣式
@@ -1492,18 +1513,52 @@
             justify-content: center;
             gap: 0;
 
-            &.full {
+            &.full1 {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: row;
+
+                height: 440px;
+                // background-color: #f0f;
+
                 @include screen_960 {
                     padding: 0 20px;
                     margin: 0 auto;
-                    height: 300px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                    height: 320px;
+                }
+
+                [data-lang="en"] & {
+                    // 英文段落可能需要調整行高
+                    height: 450px;
+                }
+            }
+
+            &.full {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 440px;
+                // background-color: #ff0;
+
+                @include screen_960 {
+                    padding: 0 20px;
+                    margin: 0 auto;
+                    height: 320px;
+
 
                     // 英文版專屬樣式
                     [data-lang="en"] & {
                         // 英文段落可能需要調整行高
+                        height: 280px;
+                    }
+                }
+
+                [data-lang="en"] & {
+                    // 英文段落可能需要調整行高
+                    height: 430px;
+
+                    @include screen_960 {
                         height: 280px;
                     }
                 }
@@ -1534,12 +1589,16 @@
 
                     @include screen_960 {
                         width: 100%;
-                        max-height: 300px;
+                        max-height: 290px;
 
                         // 英文版專屬樣式
                         [data-lang="en"] & {
                             // 英文段落可能需要調整行高
                             max-height: 280px;
+
+                            @include screen_960 {
+                                max-height: 250px;
+                            }
                         }
                     }
                 }
@@ -1565,6 +1624,10 @@
             line-height: 1.4;
             margin-bottom: 30px;
             color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            height: 40px;
 
             @include screen_960 {
                 position: relative;
@@ -1572,10 +1635,19 @@
                 left: auto;
 
                 width: 100%;
-                margin-top: 20px;
-                margin-bottom: 20px;
-                padding: 0 20px;
+                margin-top: 0;
+                margin-bottom: 0;
+                padding: 5px 60px 5px 20px;
                 font-size: 17px;
+            }
+
+            [data-lang="en"] & {
+                height: 60px;
+
+                @include screen_960 {
+                    padding: 5px 60px 5px 20px;
+                    line-height: 1.2;
+                }
             }
         }
 
@@ -1588,11 +1660,22 @@
             line-height: 1.8;
             color: #fff;
             margin-bottom: 1.5em;
+            height: 85px;
+
+            // background-color: #0ff;
 
             @include screen_960 {
                 margin: 20px auto 0 auto;
                 font-size: 13px;
                 line-height: 1.6;
+            }
+
+            [data-lang="en"] & {
+                height: 110px;
+
+                @include screen_960 {
+                    height: 130px;
+                }
             }
 
             b {
