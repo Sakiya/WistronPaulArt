@@ -106,6 +106,11 @@
         // 作品 5、7、8 不需要同步功能
     };
 
+    // ==================== 語音/作品音訊自動播放開關 ====================
+    // true：進入語音導覽頁或點選作品時自動播放；false：不自動播放，需手動按播放
+    // 客戶若之後要改回自動播放，將此處改為 true 即可
+    const AUDIO_AUTOPLAY_ENABLED = false;
+
     // 翻譯物件
     const translations = {
         zh: {
@@ -847,7 +852,7 @@
             // params.set('origin', currentOrigin); // 可選：取消註解以在開發環境使用
         }
 
-        return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
+        return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
     }
 
     // 圖片列表陣列 - 可以自行修改圖片路徑
@@ -1337,8 +1342,8 @@
                     }, 100);
                 }
 
-                // 如果切換到語音導覽頁面，自動播放語音導覽音訊
-                if (targetTab === 'audio') {
+                // 如果切換到語音導覽頁面，依開關決定是否自動播放
+                if (targetTab === 'audio' && AUDIO_AUTOPLAY_ENABLED) {
                     let playerReadyState = 'N/A';
                     if (window.audioVideoPlayer && typeof window.audioVideoPlayer.readyState === 'function') {
                         try {
@@ -1737,20 +1742,22 @@
                 setupWorkAudioSync(playerId, workId);
             }, 800);
 
-            // 播放器已存在，自動播放
-            setTimeout(function () {
-                if (player.readyState() >= 2) {
-                    player.play().catch(function (err) {
-                        handleAutoplayError(err, 'WorkPlayer');
-                    });
-                } else {
-                    player.on('loadedmetadata', function () {
+            // 播放器已存在，依開關決定是否自動播放
+            if (AUDIO_AUTOPLAY_ENABLED) {
+                setTimeout(function () {
+                    if (player.readyState() >= 2) {
                         player.play().catch(function (err) {
                             handleAutoplayError(err, 'WorkPlayer');
                         });
-                    });
-                }
-            }, 500);
+                    } else {
+                        player.on('loadedmetadata', function () {
+                            player.play().catch(function (err) {
+                                handleAutoplayError(err, 'WorkPlayer');
+                            });
+                        });
+                    }
+                }, 500);
+            }
         }
 
         // 確保 player 變數存在
@@ -1769,17 +1776,18 @@
                     src: audioFile
                 });
 
-                // 監聽音訊載入完成後，確保圖示顯示並自動播放
+                // 監聽音訊載入完成後，確保圖示顯示，依開關決定是否自動播放
                 player.on('loadedmetadata', function () {
                     setupWorkPlayerIcon(player);
-                    // 自動播放
-                    player.play().catch(function (err) {
-                        handleAutoplayError(err, 'WorkPlayer');
-                    });
+                    if (AUDIO_AUTOPLAY_ENABLED) {
+                        player.play().catch(function (err) {
+                            handleAutoplayError(err, 'WorkPlayer');
+                        });
+                    }
                 });
 
-                // 如果音訊已經載入，立即播放
-                if (player.readyState() >= 2) {
+                // 如果音訊已經載入，依開關決定是否立即播放
+                if (player.readyState() >= 2 && AUDIO_AUTOPLAY_ENABLED) {
                     player.play().catch(function (err) {
                         handleAutoplayError(err, 'WorkPlayer');
                     });
@@ -2508,26 +2516,27 @@
                     setTimeout(() => {
                         initWorkSwiper(workId);
 
-                        // 確保當前作品也是從頭開始（歸零），然後自動播放
+                        // 確保當前作品也是從頭開始（歸零），依開關決定是否自動播放
                         const playerId = 'workAudioPlayer' + workId;
                         try {
                             const player = videojs.getPlayer(playerId);
                             if (player) {
                                 player.currentTime(0);
-                                // 歸零後自動播放
-                                setTimeout(function () {
-                                    if (player.readyState() >= 2) {
-                                        player.play().catch(function (err) {
-                                            handleAutoplayError(err, 'WorkPlayer');
-                                        });
-                                    } else {
-                                        player.on('loadedmetadata', function () {
+                                if (AUDIO_AUTOPLAY_ENABLED) {
+                                    setTimeout(function () {
+                                        if (player.readyState() >= 2) {
                                             player.play().catch(function (err) {
                                                 handleAutoplayError(err, 'WorkPlayer');
                                             });
-                                        });
-                                    }
-                                }, 100);
+                                        } else {
+                                            player.on('loadedmetadata', function () {
+                                                player.play().catch(function (err) {
+                                                    handleAutoplayError(err, 'WorkPlayer');
+                                                });
+                                            });
+                                        }
+                                    }, 100);
+                                }
                             }
                         } catch (e) {
                             // 忽略錯誤
@@ -3294,8 +3303,8 @@
                             // 忽略錯誤
                         }
 
-                        if (existingPlayer.readyState() >= 2) {
-                            // 音訊已載入，直接播放
+                        if (AUDIO_AUTOPLAY_ENABLED && existingPlayer.readyState() >= 2) {
+                            // 音訊已載入且開關開啟，直接播放
                             existingPlayer.play().then(() => {
                                 console.log('[AudioGuide] 播放成功（播放器已存在）');
                                 // 播放成功後更新圖示
@@ -3306,13 +3315,11 @@
                                     setupAudioPlayerIcon(existingPlayer);
                                 });
                             });
-                        } else {
+                        } else if (AUDIO_AUTOPLAY_ENABLED) {
                             console.log('[AudioGuide] 音訊尚未載入，等待載入（播放器已存在）', {
                                 readyState: existingPlayer.readyState()
                             });
-                            // 等待音訊載入
                             const onCanPlay = () => {
-                                // 再次確保播放時間為 0
                                 try {
                                     if (existingPlayer.currentTime() > 0) {
                                         existingPlayer.currentTime(0);
@@ -3320,7 +3327,6 @@
                                 } catch (e) {
                                     // 忽略錯誤
                                 }
-
                                 console.log('[AudioGuide] 音訊載入完成，開始播放（播放器已存在）');
                                 existingPlayer.play().then(() => {
                                     console.log('[AudioGuide] 播放成功（播放器已存在）');
@@ -3343,12 +3349,11 @@
                 }, 500);
             }
 
-            // 頁面載入時，如果直接進入 audio tab，確保播放器已初始化並自動播放
+            // 頁面載入時，如果直接進入 audio tab，確保播放器已初始化，依開關決定是否自動播放
             setTimeout(() => {
                 const hashInfo = getTabFromHash();
                 if (hashInfo.tab === 'audio' && isAudioTab()) {
-                    console.log('[AudioGuide] 頁面載入時檢測到 audio tab（播放器已存在），確保自動播放');
-                    // 確保播放時間為 0
+                    console.log('[AudioGuide] 頁面載入時檢測到 audio tab（播放器已存在）');
                     try {
                         if (existingPlayer.currentTime() > 0) {
                             existingPlayer.currentTime(0);
@@ -3357,29 +3362,29 @@
                     } catch (e) {
                         // 忽略錯誤
                     }
-                    // 確保圖示已設置
                     setupAudioPlayerIcon(existingPlayer);
-                    // 嘗試播放
-                    if (existingPlayer.readyState() >= 2) {
-                        existingPlayer.play().then(() => {
-                            console.log('[AudioGuide] 頁面載入時播放成功（播放器已存在）');
-                            setupAudioPlayerIcon(existingPlayer);
-                        }).catch(function (err) {
-                            handleAutoplayError(err, 'AudioGuide', function () {
-                                setupAudioPlayerIcon(existingPlayer);
-                            });
-                        });
-                    } else {
-                        existingPlayer.on('canplay', function () {
+                    if (AUDIO_AUTOPLAY_ENABLED) {
+                        if (existingPlayer.readyState() >= 2) {
                             existingPlayer.play().then(() => {
-                                console.log('[AudioGuide] 頁面載入時播放成功（播放器已存在，等待載入）');
+                                console.log('[AudioGuide] 頁面載入時播放成功（播放器已存在）');
                                 setupAudioPlayerIcon(existingPlayer);
                             }).catch(function (err) {
                                 handleAutoplayError(err, 'AudioGuide', function () {
                                     setupAudioPlayerIcon(existingPlayer);
                                 });
                             });
-                        });
+                        } else {
+                            existingPlayer.on('canplay', function () {
+                                existingPlayer.play().then(() => {
+                                    console.log('[AudioGuide] 頁面載入時播放成功（播放器已存在，等待載入）');
+                                    setupAudioPlayerIcon(existingPlayer);
+                                }).catch(function (err) {
+                                    handleAutoplayError(err, 'AudioGuide', function () {
+                                        setupAudioPlayerIcon(existingPlayer);
+                                    });
+                                });
+                            });
+                        }
                     }
                 }
             }, 1500);
@@ -3500,11 +3505,12 @@
                 return audioContainer && audioContainer.style.display !== 'none';
             };
 
-            // 監聽音訊載入完成後自動播放（僅在語音導覽頁面）
+            // 監聽音訊載入完成後，依開關決定是否自動播放（僅在語音導覽頁面）
             const tryAutoPlay = () => {
                 const isAudio = isAudioTab();
                 console.log('[AudioGuide] initVideoPlayer: 嘗試自動播放', {
                     isAudioTab: isAudio,
+                    autoplayEnabled: AUDIO_AUTOPLAY_ENABLED,
                     readyState: player.readyState(),
                     paused: player.paused()
                 });
@@ -3513,34 +3519,30 @@
                     // 確保圖示已設置
                     setupAudioPlayerIcon(player);
 
-                    if (player.readyState() >= 2) {
-                        // 音訊已載入，直接播放
+                    if (AUDIO_AUTOPLAY_ENABLED && player.readyState() >= 2) {
+                        // 音訊已載入且開關開啟，直接播放
                         console.log('[AudioGuide] initVideoPlayer: 音訊已載入，開始播放');
                         player.play().then(() => {
                             console.log('[AudioGuide] initVideoPlayer: 播放成功');
-                            // 播放成功後更新圖示
                             setupAudioPlayerIcon(player);
                         }).catch(function (err) {
                             handleAutoplayError(err, 'AudioGuide', function () {
-                                // 播放失敗後也要更新圖示
                                 setupAudioPlayerIcon(player);
                             });
                         });
-                    } else {
+                    } else if (AUDIO_AUTOPLAY_ENABLED) {
                         console.log('[AudioGuide] initVideoPlayer: 音訊尚未載入，等待載入...', {
                             readyState: player.readyState()
                         });
                         // 等待音訊載入
                         const onCanPlay = () => {
-                            if (isAudioTab()) {
+                            if (isAudioTab() && AUDIO_AUTOPLAY_ENABLED) {
                                 console.log('[AudioGuide] initVideoPlayer: 音訊載入完成，開始播放');
                                 player.play().then(() => {
                                     console.log('[AudioGuide] initVideoPlayer: 播放成功');
-                                    // 播放成功後更新圖示
                                     setupAudioPlayerIcon(player);
                                 }).catch(function (err) {
                                     handleAutoplayError(err, 'AudioGuide', function () {
-                                        // 播放失敗後也要更新圖示
                                         setupAudioPlayerIcon(player);
                                     });
                                 });
@@ -3907,10 +3909,10 @@
             // 再檢查一次，確保播放器已完全初始化
             setTimeout(checkAndAutoPlayOnLoad, 2500);
 
-            // 監聽音訊載入完成事件，如果頁面載入時就在 audio tab，自動播放
+            // 監聽音訊載入完成事件，如果頁面載入時就在 audio tab，依開關決定是否自動播放
             player.on('canplaythrough', function () {
                 const hashInfo = getTabFromHash();
-                if (hashInfo.tab === 'audio') {
+                if (hashInfo.tab === 'audio' && AUDIO_AUTOPLAY_ENABLED) {
                     console.log('[AudioGuide] 音訊載入完成，頁面載入時在 audio tab，嘗試自動播放');
                     try {
                         if (player.currentTime() > 0) {
