@@ -111,6 +111,9 @@
     // 客戶若之後要改回自動播放，將此處改為 true 即可
     const AUDIO_AUTOPLAY_ENABLED = false;
 
+    // YouTube embed 診斷：僅輸出一次，供排查 153 等問題
+    let youtubeDiagnosticLogged = false;
+
     // 翻譯物件
     const translations = {
         zh: {
@@ -845,14 +848,40 @@
 
         // 只在生產環境或明確需要時設置 origin
         // 如果客戶已設置 YouTube 嵌入權限，可以移除 origin 參數讓 YouTube 自動檢測
+        const originInUrl = isProduction ? `https://${productionDomain}` : null;
         if (isProduction) {
-            params.set('origin', `https://${productionDomain}`);
-        } else {
-            // 開發環境：使用當前 origin，或移除讓 YouTube 自動檢測
-            // params.set('origin', currentOrigin); // 可選：取消註解以在開發環境使用
+            params.set('origin', originInUrl);
         }
 
-        return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+        const fullEmbedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+
+        // 診斷用：僅第一次產生 embed URL 時輸出，請將結果提供給開發人員
+        if (!youtubeDiagnosticLogged) {
+            youtubeDiagnosticLogged = true;
+            const diagnostic = {
+                '【1】頁面資訊（實際載入的網域）': {
+                    'location.origin': window.location.origin,
+                    'location.hostname': window.location.hostname,
+                    'location.href': window.location.href,
+                    'document.referrer': document.referrer || '(空)',
+                    'document.referrerPolicy': typeof document.referrerPolicy !== 'undefined' ? document.referrerPolicy : '(無法取得)'
+                },
+                '【2】embed 參數（送給 YouTube 的）': {
+                    'currentOrigin': currentOrigin,
+                    'productionDomain': productionDomain,
+                    'isProduction': isProduction,
+                    'origin 是否寫入 URL': originInUrl != null ? originInUrl : '(未設定)',
+                    'widget_referrer': currentOrigin
+                },
+                '【3】完整 embed URL（前 120 字）': fullEmbedUrl.substring(0, 120) + (fullEmbedUrl.length > 120 ? '...' : ''),
+                '【4】影片 ID（請到 YouTube Studio 確認嵌入允許的網域）': videoId
+            };
+            console.log('%c[YouTube Embed 診斷] 請將下方整段物件複製給開發人員', 'color:#2196F3; font-weight:bold;');
+            console.log(diagnostic);
+            console.log('%c（若為 153 等錯誤，比對 dev 與正式站此處的差異）', 'color:#666;');
+        }
+
+        return fullEmbedUrl;
     }
 
     // 圖片列表陣列 - 可以自行修改圖片路徑
