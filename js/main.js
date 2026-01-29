@@ -876,8 +876,8 @@
                 '【3】完整 embed URL（前 120 字）': fullEmbedUrl.substring(0, 120) + (fullEmbedUrl.length > 120 ? '...' : ''),
                 '【4】影片 ID（請到 YouTube Studio 確認嵌入允許的網域）': videoId
             };
-            console.log('%c[YouTube Embed 診斷] 請將下方整段物件複製給開發人員', 'color:#2196F3; font-weight:bold;');
-            console.log(diagnostic);
+            console.log('%c[YouTube Embed 診斷] 請將「下方整段文字」複製給開發人員', 'color:#2196F3; font-weight:bold;');
+            console.log(JSON.stringify(diagnostic, null, 2));
             console.log('%c（若為 153 等錯誤，比對 dev 與正式站此處的差異）', 'color:#666;');
         }
 
