@@ -77,26 +77,6 @@
             "route": "/*.sql",
             "statusCode": 403
         },
-        // {
-        //     "route": "/js/",
-        //     "redirect": "/",
-        //     "statusCode": 301
-        // },
-        // {
-        //     "route": "/img/",
-        //     "redirect": "/",
-        //     "statusCode": 301
-        // },
-        // {
-        //     "route": "/css/",
-        //     "redirect": "/",
-        //     "statusCode": 301
-        // },
-        // {
-        //     "route": "/webfonts/",
-        //     "redirect": "/",
-        //     "statusCode": 301
-        // },
         {
             "route": "/*",
             "serve": "/index.html"
