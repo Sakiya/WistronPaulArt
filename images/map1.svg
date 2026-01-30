@@ -1,18 +1,16 @@
 <svg width="331" height="361" viewBox="0 0 331 361" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M294.898 16.5972V127.465" stroke="white" stroke-width="0.89102"/>
-<path d="M110.09 0.890991V127.543" stroke="white" stroke-width="0.89102"/>
-<path d="M73.3242 0.890991V127.597" stroke="white" stroke-width="0.89102"/>
-<path d="M25.8906 0.890991V127.597" stroke="white" stroke-width="0.89102"/>
+<path d="M294 0L294 148" stroke="white" stroke-width="0.89102"/>
 <path d="M109.703 145.049H294.455" stroke="white" stroke-width="0.89102"/>
-<path d="M25.4434 127.151H72.8787" stroke="white" stroke-width="0.89102"/>
 <path d="M330.555 0.445496H2.02344V360.29H330.555V0.445496Z" stroke="white" stroke-width="0.89102"/>
 <path d="M295.919 179.934H31.7266V244.624H295.919V179.934Z" stroke="white" stroke-width="0.89102"/>
 <path d="M5.4082 179.488V359.89" stroke="white" stroke-width="5.98256"/>
 <path d="M297.955 16.7244V127.593" stroke="white" stroke-width="5.98256"/>
 <path d="M299.355 179.488V245.07" stroke="white" stroke-width="5.98256"/>
-<path d="M176.216 148.482H109.645" stroke="white" stroke-width="5.98256"/>
+<path d="M177 148L110 148" stroke="white" stroke-width="5.98256"/>
 <path d="M250.045 148.482H183.473" stroke="white" stroke-width="5.98256"/>
 <path d="M294.468 148.482H257.555" stroke="white" stroke-width="5.98256"/>
 <path d="M96.9685 248.061H31.2812" stroke="white" stroke-width="5.98256"/>
-<path d="M73.6221 130.588H25.4434" stroke="white" stroke-width="5.98256"/>
+<path d="M187.695 358H127" stroke="white"/>
+<path d="M26 0V127.079H110V151" stroke="white"/>
 </svg>

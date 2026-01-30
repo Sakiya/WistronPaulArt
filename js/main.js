@@ -146,13 +146,14 @@
             'exhibition.gallery': '畫展剪影',
             // 語音導覽
             'audio.guide': '請點選平面圖上的展位號碼，並聆聽導覽語音',
-            // 作品
+            // 引言
+            'work.0.title': '引言',
+            'work.0.description': '引言內容（可於 main.js 翻譯中修改）',
+            'work.0.image': '引言',
             'work.1.title': '《台灣山脈》系列',
             'work.1.age': '75歲',
             'work.1.description': '江賢二希望找一處有海的地方居住，有五年間，他和太太常從清晨就從台北開車往東海岸，經過宜蘭、花蓮，最終來到台東金樽，這讓他將對台灣山巒不同時間的光影印象化為《台灣山脈》系列。',
             'work.1.image1': '台灣山脈 17-17, 2017',
-            'work.1.image2': '台灣山脈 21-22, 2021',
-            'work.1.image3': '台灣山脈 12-01, 2012',
             // 作品 2
             'work.2.title': '《比西里岸之夢》',
             'work.2.image1': '比西里岸之夢 09-07, 2009',
@@ -269,13 +270,14 @@
             'exhibition.gallery': 'Exhibition Gallery',
             // 語音導覽
             'audio.guide': 'Please click on the booth numbers on the floor plan and listen to the audio guide',
-            // 作品
+            // 引言
+            'work.0.title': 'Introduction',
+            'work.0.description': 'Introduction content (edit in main.js translations)',
+            'work.0.image': 'Introduction',
             'work.1.title': 'Mountain Range of Taiwan series',
             'work.1.age': 'Age 75',
             'work.1.description': 'Paul Chiang longed to live by the sea. For five years, he and his wife often set out from Taipei at daybreak, traveling along Taiwan’s east coast, passing through Yilan and Hualien until they finally settled in Jinzun. These journeys shaped his impressions of shifting mountain light into the Mountain Range of Taiwan series.',
             'work.1.image1': 'Mountain Range of Taiwan 17-17, 2017',
-            'work.1.image2': 'Mountain Range of Taiwan 21-22, 2021',
-            'work.1.image3': 'Mountain Range of Taiwan 12-01, 2012',
             // 作品 2
             'work.2.title': 'Pisirian',
             'work.2.image1': 'Pisirian 09-07, 2009',
@@ -680,8 +682,8 @@
             }
         }
 
-        // 重新載入所有作品播放器
-        for (let i = 1; i <= 9; i++) {
+        // 重新載入所有作品播放器（0=引言, 1～8=作品1～8）
+        for (let i = 0; i <= 8; i++) {
             const playerId = 'workAudioPlayer' + i;
             try {
                 if (typeof videojs !== 'undefined') {
@@ -751,9 +753,9 @@
     // 儲存 YouTube iframe 的原始 src，用於恢復播放
     let youtubeIframeOriginalSrc = null;
 
-    // 作品英文名稱陣列 - 對應 9 個作品，用於 URL hash
-    // 可以自行修改每個作品的英文名稱
+    // 作品英文名稱陣列 - 對應作品 0～8（0=引言，1～8=作品1～8），用於 URL hash
     const workNames = [
+        'Work_0',  // 作品 0 引言
         'Work_1',  // 作品 1
         'Work_2',  // 作品 2
         'Work_3',  // 作品 3
@@ -761,8 +763,7 @@
         'Work_5',  // 作品 5
         'Work_6',  // 作品 6
         'Work_7',  // 作品 7
-        'Work_8',  // 作品 8
-        'Work_9'   // 作品 9
+        'Work_8'   // 作品 8
     ];
 
     // ==================== 音訊檔案管理（支援中英文版本） ====================
@@ -805,11 +806,19 @@
     /**
      * 取得作品音訊檔案
      * @param {string} lang - 語言代碼 ('zh' 或 'en')
-     * @param {number} workId - 作品編號 (1-9)
+     * @param {number} workId - 作品編號 (0=引言, 1-8=作品1～8)
      * @returns {string} 音訊檔案路徑
+     *
+     * 語音導覽主音訊：00.mp3（getMainAudioFile）
+     * 引言（作品0）：00-intro.mp3（可與語音導覽不同；請在 images/audio/zh/、en/ 放入該檔）
+     * 作品1～8：01.mp3～08.mp3
      */
     function getWorkAudioFile(lang, workId) {
-        return getAudioFile(lang, workId); // 01.mp3, 02.mp3, ..., 09.mp3
+        // 作品 0（引言）使用獨立檔 00-intro.mp3，與語音導覽的 00.mp3 分開
+        if (workId === 0) {
+            return `images/audio/${lang}/00-intro.mp3`;
+        }
+        return getAudioFile(lang, workId); // 01.mp3, 02.mp3, ..., 08.mp3
     }
 
     /**
@@ -1583,11 +1592,11 @@
 
     /**
      * 根據作品編號獲取作品名稱
-     * @param {number} workId - 作品編號 (1-9)
+     * @param {number} workId - 作品編號 (0=引言, 1-8=作品1～8)
      * @returns {string} 作品英文名稱
      */
     function getWorkName(workId) {
-        const index = parseInt(workId) - 1;
+        const index = parseInt(workId, 10);
         if (index >= 0 && index < workNames.length) {
             return workNames[index];
         }
@@ -1597,12 +1606,12 @@
     /**
      * 根據作品名稱獲取作品編號
      * @param {string} workName - 作品英文名稱
-     * @returns {number} 作品編號 (1-9)
+     * @returns {number} 作品編號 (0=引言, 1-8=作品1～8)
      */
     function getWorkIdFromName(workName) {
         const index = workNames.indexOf(workName);
         if (index >= 0) {
-            return index + 1; // 轉換為 1-9
+            return index;
         }
         return null;
     }
@@ -2224,7 +2233,7 @@
      * 將所有作品的音訊時間重置為 0:00，Swiper 切換到第一個 slide
      */
     function resetAllWorks() {
-        for (let i = 1; i <= 9; i++) {
+        for (let i = 0; i <= 8; i++) {
             const playerId = 'workAudioPlayer' + i;
             try {
                 const player = videojs.getPlayer(playerId);
@@ -2245,7 +2254,7 @@
                     console.warn('重置 Swiper 失敗:', e);
                 }
             }
-            // 如果是作品 1，也嘗試 mobile key
+            // 如果是作品 1，也嘗試 mobile key（作品 0 無 Swiper）
             if (i === 1 && window.workSwipers && window.workSwipers[i + 'Mobile']) {
                 try {
                     window.workSwipers[i + 'Mobile'].slideTo(0);
@@ -2265,7 +2274,7 @@
             return;
         }
 
-        for (let i = 1; i <= 9; i++) {
+        for (let i = 0; i <= 8; i++) {
             const playerId = 'workAudioPlayer' + i;
             try {
                 const player = videojs.getPlayer(playerId);
@@ -2487,9 +2496,9 @@
                 content.style.display = 'flex';
                 content.classList.add('active');
 
-                // 先停止並歸零其他作品
-                for (let i = 1; i <= 9; i++) {
-                    if (i !== workId) {
+                // 先停止並歸零其他作品（0=引言, 1～8=作品1～8）
+                for (let i = 0; i <= 8; i++) {
+                    if (i !== Number(workId)) {
                         const playerId = 'workAudioPlayer' + i;
                         try {
                             const player = videojs.getPlayer(playerId);
@@ -2725,10 +2734,10 @@
             });
             switchTab(hashInfo.tab, false); // 不更新 hash，因為已經改變了
 
-            // 如果是作品詳情，顯示對應作品
+            // 如果是作品詳情，顯示對應作品（workId 可能為 0=引言，不可用 if(workId)）
             if (hashInfo.tab === 'workDetail' && hashInfo.workName) {
                 const workId = getWorkIdFromName(hashInfo.workName);
-                if (workId) {
+                if (workId != null) {
                     setTimeout(() => {
                         showWorkDetail(workId);
                     }, 200);
@@ -2809,10 +2818,10 @@
         const hashInfo = getTabFromHash();
         switchTab(hashInfo.tab, false); // 不更新 hash，使用現有的
 
-        // 如果是作品詳情，顯示對應作品
+        // 如果是作品詳情，顯示對應作品（workId 可能為 0=引言，不可用 if(workId)）
         if (hashInfo.tab === 'workDetail' && hashInfo.workName) {
             const workId = getWorkIdFromName(hashInfo.workName);
-            if (workId) {
+            if (workId != null) {
                 setTimeout(() => {
                     showWorkDetail(workId);
                 }, 300);
