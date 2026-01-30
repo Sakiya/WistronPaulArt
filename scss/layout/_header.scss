@@ -80,7 +80,7 @@
                         // 英文版專屬樣式
                         [data-lang="en"] & {
                             // 英文文字通常較長，可以調整寬度
-                            width: 280px;
+                            width: 260px;
                             letter-spacing: 0.1em; // 英文通常不需要那麼大的字距
                         }
 
@@ -163,6 +163,12 @@
                 font-weight: 500;
                 color: $color_white;
                 letter-spacing: 0.5em;
+
+                [data-lang="en"] & {
+                    @include screen_960 {
+                        letter-spacing: 0.1em;
+                    }
+                }
             }
 
 
@@ -198,7 +204,7 @@
             transform: translateY(0);
         }
 
-        @include screen_960 {}
+
 
         .language {
             width: 40px;

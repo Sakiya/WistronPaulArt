@@ -122,7 +122,7 @@
             // 導航
             'nav.exhibition': '展覽簡介',
             'nav.audio': '語音導覽',
-            'nav.survey': '問卷調查',
+            'nav.survey': '滿意度調查',
             // 展覽簡介
             'exhibition.introVideo': '畫展介紹影片',
             'exhibition.title': '光之追尋——江賢二藝術展',
@@ -246,7 +246,7 @@
             // 導航
             'nav.exhibition': 'Exhibition',
             'nav.audio': 'Audio Guide',
-            'nav.survey': 'Survey',
+            'nav.survey': 'Satisfaction Survey',
             // 展覽簡介
             'exhibition.introVideo': 'Exhibition Introduction Video',
             'exhibition.title': 'In Search of Light — The Art of Paul Chiang',
@@ -889,13 +889,6 @@
 
     // 圖片列表陣列 - 可以自行修改圖片路徑
     const imageList = [
-        // 'images/popup/images1.png',
-        // 'images/popup/images2.png',
-        // 'images/popup/images3.png',
-        // 'images/popup/images4.png',
-        // 'images/popup/images5.png',
-        // 'images/popup/images6.png',
-        // 'images/popup/images7.png',
         'images/popup/251229-101.png',
         'images/popup/251229-102.png',
         'images/popup/251229-103.png',
