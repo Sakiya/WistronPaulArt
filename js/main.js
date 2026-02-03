@@ -130,8 +130,8 @@
             'exhibition.description2': '本展以三個精神階段串起江賢二的創作軸線：',
             'exhibition.description3': '追尋光 → 遇見光 → 成為光。',
             'exhibition.seeking.title': '追尋光',
-            'exhibition.seeking.subtitle': '源自他遷居台東後的轉變呈現江賢二在生命黑暗與封窗創作期的掙扎。',
-            'exhibition.seeking.content': '《巴黎聖母院》、《淨化之夜》、《百年廟》到《銀湖》皆屬此階段。畫面多以黑、白、灰、褐為主，筆觸層層堆疊、刮除與覆寫，像是不斷在迷霧中摸索出口；然而在深沉的底層之下，仍能看見微弱但堅定的亮點，象徵著仍未放棄的希望。《銀湖》更是這段生命歷程的縮影——在女兒病情與創作瓶頸之間，他仍努力相信光會再度出現。「遇見光」源自他遷居台東後的轉變。自然光影、太平洋的海天與群山色層重新啟動他的色彩語言，使畫面變得明亮繽紛、自由並充滿流動感。《台灣山脈》捕捉不同天候下的光之變奏，而《比西里岸之夢》則展現他在自然與文化相遇後所獲得的創作新生命，色彩自由綻放，彷彿生命再度被光點亮。',
+            'exhibition.seeking.subtitle': '呈現江賢二在生命黑暗與封窗創作期的掙扎。',
+            'exhibition.seeking.content': '《巴黎聖母院》、《淨化之夜》、《百年廟》到《銀湖》皆屬此階段。畫面多以黑、白、灰、褐為主，筆觸層層堆疊、刮除與覆寫，像是不斷在迷霧中摸索出口；然而在深沉的底層之下，仍能看見微弱但堅定的亮點，象徵著仍未放棄的希望。《銀湖》更是這段生命歷程的縮影——在女兒病情與創作瓶頸之間，他仍努力相信光會再度出現。',
             'exhibition.encountering.title': '遇見光',
             'exhibition.encountering.subtitle': '源自他遷居台東後的轉變。',
             'exhibition.encountering.content': '自然光影、太平洋的海天與群山色層重新啟動他的色彩語言，使畫面變得明亮繽紛、自由並充滿流動感。《台灣山脈》捕捉不同天候下的光之變奏，而《比西里岸之夢》則展現他在自然與文化相遇後所獲得的創作新生命，色彩自由綻放，彷彿生命再度被光點亮。',
@@ -146,16 +146,25 @@
             'exhibition.gallery': '畫展剪影',
             // 語音導覽
             'audio.guide': '請點選平面圖上的展位號碼，並聆聽導覽語音',
-            // 引言
-            'work.0.title': '引言',
-            'work.0.description': '引言內容（可於 main.js 翻譯中修改）',
-            'work.0.image': '引言',
-            'work.1.title': '《台灣山脈》系列',
+            // 引言（3 則 slide）
+            'work.0.title': '尋光之旅：江賢二藝術展',
+            'work.0.image1': '尋光之旅：江賢二藝術展',
+            'work.0.image2': '尋光之旅：江賢二藝術展',
+            'work.0.image3': '尋光之旅：江賢二藝術展',
+            'work.0.description1': '江賢二，1942年生於台中，十五歲便立志成為藝術家。自巴黎啟程，長居紐約三十餘年，在異鄉孤獨創作，追尋屬於自己的藝術語言。重返臺灣後，他以〈百年廟〉系列奠定藝壇地位，隨後更在生命谷底中，以〈銀湖〉系列找到突破與出口。2008年遷居台東，他迎向大自然的洗禮，獲得「第二個藝術生命」。從封窗作畫到打開心窗導入天光，他筆下的光，不只是風景，更是心靈深處的明亮。',
+            'work.0.description2': '「我想找的光，是從自己心裡面出來的光。」江賢二如是說。半世紀以來，他的創作始終追尋「精神性」，以純淨透明的色彩與光影，回應生命的掙扎與希望。這道光象徵著希望、自由與堅持，也照映藝術家一生的信念。',
+            'work.0.description3': '本展由江賢二藝術文化基金會主辦，不僅呈現作品，期望帶領觀眾穿越藝術家不同時期的創作與心境，見證他如何在追尋、苦難與堅持之間，最終綻放屬於自己的光。我們期盼這趟「尋光之旅」，能為仍在理想中奮鬥的人們，帶來啟發與鼓舞。',
+            'work.0.image4': '',
+            'work.0.description4': '',
+            // 作品 1
+            'work.1.title': '遇見光 1-1：《台灣山脈》系列',
             'work.1.age': '75歲',
             'work.1.description': '江賢二希望找一處有海的地方居住，有五年間，他和太太常從清晨就從台北開車往東海岸，經過宜蘭、花蓮，最終來到台東金樽，這讓他將對台灣山巒不同時間的光影印象化為《台灣山脈》系列。',
             'work.1.image1': '台灣山脈 17-17, 2017',
+            'work.1.image2': '台灣山脈 21-22, 2021',
+            'work.1.image3': '台灣山脈 12-01, 2012',
             // 作品 2
-            'work.2.title': '《比西里岸之夢》',
+            'work.2.title': '遇見光 1-2：《比西里岸之夢》',
             'work.2.image1': '比西里岸之夢 09-07, 2009',
             'work.2.age1': '67歲',
             'work.2.description1': '《比西里岸之夢》系列是江賢二移居台東後，最早發展的一個系列，畫面出現前所未見似繁花盛開的紅、淡粉紅、藍、亮黃色，他突破過去用色的極限，畫面瀰漫春之氣息。',
@@ -172,7 +181,7 @@
             'work.2.age5': '73歲',
             'work.2.description5': '到了台東，江賢二所畫的海終於呈現藍色，海水就像一副透鏡，隨時折射天光變化，撞擊出與陸地完全相異的色感。他每天與海相伴，眼中所見的是不同的海天變奏。',
             // 作品 3
-            'work.3.title': '《巴黎聖母院》、《淨化之夜 94-01》系列',
+            'work.3.title': '追尋光 1-1：《巴黎聖母院》、《淨化之夜》系列',
             'work.3.image1': '巴黎聖母院 1982',
             'work.3.age1': '40歲',
             'work.3.description1': '住在紐約的江賢二重返巴黎，他封窗作畫，以熱門景點巴黎聖母院為題。聖母院在他的筆下寧靜異常，寫景寓情，畫出這幅畫後他終於覺得自己有資格當個藝術家。',
@@ -183,7 +192,7 @@
             'work.3.age3': '52歲',
             'work.3.description3': '「淨化」是江賢二一生創作重要的主題，像是一條他不斷回頭面對的內在之路。在漫長的創作生涯，江賢二仍持續以追求崇高精神性的「淨化」，作為對創作的期許。',
             // 作品 4
-            'work.4.title': '《百年廟》系列',
+            'work.4.title': '追尋光 1-1：《百年廟》系列',
             'work.4.image1': '百年廟 98-17, 1998',
             'work.4.age1': '55歲',
             'work.4.description1': '江賢二回到台灣，街頭廟宇裡的龍柱、香火、燭光、裊裊的煙霧，讓他重新感受與土地、與文化與記憶的深刻連結。《百年廟》也成為他立足於台灣藝壇的重要系列創作。',
@@ -194,12 +203,12 @@
             'work.4.age3': '56歲',
             'work.4.description3': '剛回到台灣，雖然工作室簡陋，並沒有削弱江賢二日以繼夜創作的熱情。這些作品承載他層層堆疊的記憶、信仰與歸屬感，畫面中金銅色的光象徵著溫暖而不熄的永恆之光。',
             // 作品 5
-            'work.5.title': '《對永恆的冥想 01-55》系列',
+            'work.5.title': '追尋光 1-1：《對永恆的冥想》系列',
             'work.5.age': '59歲',
             'work.5.description': '江賢二將視線推向更遼闊的宇宙，以深藍、黑與細小如星塵的光點構成畫面，對他來說，宇宙並不是一個外在景象，而是一種通往內心、更廣闊存在的道路。',
             'work.5.image': '對永恆的冥想 01-55, 2001',
             // 作品 6
-            'work.6.title': '《銀湖》系列',
+            'work.6.title': '追尋光 1-2：《銀湖》系列',
             'work.6.image1': '銀湖 2006',
             'work.6.age1': '64歲',
             'work.6.description1': '江賢二回台定居10年後面臨創作瓶頸，他渴望突破、找到下一個方向，他說，「熟能生巧對於藝術家而言是個美麗的陷阱」，也因大女兒生病，他面臨人生與創作的雙重考驗。',
@@ -218,7 +227,7 @@
             // 作品 7
             'work.7.title': '留言互動牆',
             'work.7.image': '留言互動牆',
-            'work.7.description': '留言互動牆',
+            'work.7.description': '走到這裡，誠摯邀請您稍作停留，從追尋光，到遇見光，最後走向成為光的這個過程。其實就像我們每一個人的旅程一樣。江老師的作品承載著許多生命的故事，情緒的重量，以及對於未來深深的期盼。因此在這一個留言區，我們也誠摯邀請您或許留下一個問題、一段正在發生的故事，或是一句想要送給自己的話。也許您的這一則留言也會成為下一道光，照亮著另外一個人',
             // 作品 8
             'work.8.title': '江賢二藝術園區的自然、建築、藝術',
             'work.8.age': '',
@@ -265,21 +274,30 @@
             'exhibition.becoming.content2': 'Here, art extends beyond the canvas and becomes a serene presence of light in the lives of others. The Art Center is also a long-term social endeavor co-founded with Stanley Yen and many supporters, carrying the hope of connecting Taiwan with the world and presenting a vision of everyday cultural richness—art as a bridge through which light continues to be shared.',
             'exhibition.becoming.content3': 'Throughout the exhibition, each label notes the age at which Chiang created the work. As you move through the exhibition, you may find reflections of your own journey:',
             'exhibition.becoming.content3.question': 'At this moment, what are you seeking? What are you facing? And where is your light leading you?',
-            'exhibition.becoming.content4': 'May this journey toward light accompany you as you walk through the gallery.Light does not need to be dazzling—it only needs to guide. May you find your own light here.',
+            'exhibition.becoming.content4': 'May this journey toward light accompany you as you walk through the gallery.<br/><br/>Light does not need to be dazzling—it only needs to guide.<br/><br/>May you find your own light here.',
             'exhibition.opening': '2025.11.27 Opening Ceremony Highlights',
             'exhibition.gallery': 'Exhibition Gallery',
             // 語音導覽
             'audio.guide': 'Please click on the booth numbers on the floor plan and listen to the audio guide',
-            // 引言
-            'work.0.title': 'Introduction',
-            'work.0.description': 'Introduction content (edit in main.js translations)',
-            'work.0.image': 'Introduction',
-            'work.1.title': 'Mountain Range of Taiwan series',
+            // 引言（3 則 slide）
+            'work.0.title': 'In Search of Light: Paul Chiang’s Life Journey for Art',
+            'work.0.image1': 'In Search of Light: Paul Chiang’s Life Journey for Art',
+            'work.0.image2': 'In Search of Light: Paul Chiang’s Life Journey for Art',
+            'work.0.image3': 'In Search of Light: Paul Chiang’s Life Journey for Art',
+            'work.0.image4': 'In Search of Light: Paul Chiang’s Life Journey for Art',
+            'work.0.description1': 'Born in Taichung in 1942, Paul Chiang began his artistic path at the age of 15. Seeking for his own creative voice, he set sail for Paris, then embarked a lonely, three-decade long voyage in New York before returning to Taiwan, where he finally made his mark with the “Hundred Year Temple” series. In a period of deep personal struggle, he reached a turning point after creating the “Silver Lake” series, opening a new chapter in his creative journey.',
+            'work.0.description2': 'Since relocating to Taitung in 2008, Chiang has embraced nature as his source of renewal—he calls it “his second artistic life.”  Moving from painting behind shuttered windows to welcoming “the light of the nature” onto the canvas, he transformed light from a mere reflection of landscape into a profound illumination of his spirit.',
+            'work.0.description3': '“I seek the light that comes from within my own heart,” Chiang reflects. For over half a century, he has been following this spiritual directive, using pure, transparent colors to present life’s struggles and hopes. His light embodies freedom, resilience, and the quiet strength of perseverance, shining with this conviction throughout his lifetime.',
+            'work.0.description4': 'Presented by the Paul Chiang Arts and Cultural Foundation, this exhibition invites audiences to follow the arc of Chiang’s search, to witness and to be inspired by how his trials and persistence have blossomed into a light uniquely his own.',
+            // 作品 1
+            'work.1.title': 'Encountering Light 1-1: Mountain Range of Taiwan series',
             'work.1.age': 'Age 75',
             'work.1.description': 'Paul Chiang longed to live by the sea. For five years, he and his wife often set out from Taipei at daybreak, traveling along Taiwan’s east coast, passing through Yilan and Hualien until they finally settled in Jinzun. These journeys shaped his impressions of shifting mountain light into the Mountain Range of Taiwan series.',
             'work.1.image1': 'Mountain Range of Taiwan 17-17, 2017',
+            'work.1.image2': 'Mountain Range of Taiwan 21-22, 2021',
+            'work.1.image3': 'Mountain Range of Taiwan 12-01, 2012',
             // 作品 2
-            'work.2.title': 'Pisirian',
+            'work.2.title': 'Encountering Light 1-2: Pisirian',
             'work.2.image1': 'Pisirian 09-07, 2009',
             'work.2.age1': 'Age 67',
             'work.2.description1': 'Pisirian is the first series Paul Chiang created after moving to Taitung. For the first time, the canvas bursts with colors resembling blooming flowers—vivid reds, soft pinks, blues, and bright yellows. In this work, he breaks through the limits of his previous palette, filling the picture with the atmosphere and vitality of spring.',
@@ -296,7 +314,7 @@
             'work.2.age5': 'Age 73',
             'work.2.description5': 'The sea in Paul Chiang\'s paintings finally emerged in blue. The sea is like a lens, constantly refracting shifting light into colors unseen on land. Living beside the ocean, he sees endless variations of sea and sky—each a quiet movement in nature\'s unfolding symphony.',
             // 作品 3
-            'work.3.title': 'Notre Dame de Paris, Transfigured Night',
+            'work.3.title': 'Seeking Light 1-1: Notre Dame de Paris, Transfigured Night',
             'work.3.image1': 'Notre Dame de Paris 1982',
             'work.3.age1': 'Age 40',
             'work.3.description1': 'While living in New York, Paul Chiang returned to Paris and painted this piece with his windows shut, capturing Notre-Dame in an unusual, quiet stillness. When he completed it, he felt—for the first time—that he truly had the right to call himself an artist.',
@@ -307,7 +325,7 @@
             'work.3.age3': 'Age 52',
             'work.3.description3': '"Purification" is one of the defining themes of Paul Chiang\'s work—an inner path he continually returns to. Throughout his long artistic journey, he has upheld this pursuit of spirituality as a guiding aspiration.',
             // 作品 4
-            'work.4.title': 'Hundred Year Temple',
+            'work.4.title': 'Seeking Light 1-1: Hundred Year Temple',
             'work.4.image1': 'Hundred Year Temple 98-17, 1998',
             'work.4.age1': 'Age 55',
             'work.4.description1': 'Returning to Taiwan, Paul Chiang felt a renewed connection to the land, culture, and memories evoked by temple scenes—the dragon pillars, incense, candlelight, and drifting smoke. His Hundred Year Temple series became a cornerstone of his artistic presence in Taiwan’s art world.',
@@ -318,12 +336,12 @@
             'work.4.age3': 'Age 56',
             'work.4.description3': 'Newly returned to Taiwan, Paul Chiang\'s modest studio did nothing to dim his day-and-night passion for creation. These paintings carry his layered memories, faith, and sense of belonging, their golden-bronze light symbolizing a warm, enduring, ever-present glow.',
             // 作品 5
-            'work.5.title': 'Meditation on Eternity series',
+            'work.5.title': 'Seeking Light 1-1: Meditation on Eternity series',
             'work.5.age': 'Age 59',
             'work.5.description': 'Paul Chiang turned his gaze toward a vaster cosmos, using deep blue, black, and stardust-like points of light. For him, the universe is not an external scene but a path inward—toward a broader, more expansive state of being.',
             'work.5.image': 'Meditation on Eternity 01-55, 2001',
             // 作品 6
-            'work.6.title': 'Silver Lake, Pisirian',
+            'work.6.title': 'Seeking Light 1-2: Silver Lake, Pisirian',
             'work.6.image1': 'Silver Lake 2006',
             'work.6.age1': 'Age 64',
             'work.6.description1': 'A decade after returning to Taiwan, Paul Chiang found himself at a creative crossroads, yearning for a new direction. “For an artist, proficiency can be a beautiful trap,” he said. With his elder daughter’s illness, he faced a twofold challenge in both life and creation.',
@@ -342,7 +360,7 @@
             // 作品 7
             'work.7.title': 'Message Wall',
             'work.7.image': 'Message Wall',
-            'work.7.description': 'Message Wall',
+            'work.7.description': 'Having come this far, we sincerely invite you to pause here. The journey from seeking light, to encountering light, and finally becoming light is in fact like each of our own life journeys. Paul Chiang\'s works carry many life stories, the weight of emotion, and a deep hope for the future. In this message area, we warmly invite you to leave perhaps a question, a story that is still unfolding, or a word you would like to give to yourself. Perhaps your message will become the next beam of light, illuminating someone else.',
             // 作品 8
             'work.8.title': 'Nature, Architecture, and Art of Paul Chiang Art Center',
             'work.8.age': '',
@@ -367,6 +385,20 @@
     };
 
     /**
+     * 僅允許 <br> / <br/> 的 HTML 淨化，避免 XSS；其餘標籤一律跳脫
+     * @param {string} str - 翻譯字串
+     * @returns {string} 可安全用於 innerHTML 的字串
+     */
+    function sanitizeTranslationHtml(str) {
+        if (typeof str !== 'string') { return ''; }
+        const escaped = str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+        return escaped.replace(/&lt;br\s*\/?&gt;/gi, '<br/>');
+    }
+
+    /**
      * 套用翻譯到所有帶有 data-i18n 屬性的元素
      * @param {string} lang - 語言代碼 ('zh' 或 'en')
      */
@@ -384,6 +416,9 @@
                     element.setAttribute('content', translation);
                 } else if (element.tagName === 'TITLE') {
                     element.textContent = translation;
+                } else if (element.getAttribute('data-i18n-html') === 'true') {
+                    // 僅允許 <br/>，其餘跳脫，避免 XSS
+                    element.innerHTML = sanitizeTranslationHtml(translation);
                 } else {
                     element.textContent = translation;
                 }
@@ -426,6 +461,13 @@
         // 更新 html lang 屬性
         document.documentElement.setAttribute('lang', lang === 'zh' ? 'zh-TW' : 'en');
         document.documentElement.setAttribute('data-lang', lang);
+
+        // 若正在看引言（作品 0），依語系重設 Swiper：中文 3 個 slide、英文 4 個
+        const workDetailEl = document.querySelector('div[data-content="workDetail"]');
+        const work0Active = document.querySelector('.workDetailContent[data-work="0"].active');
+        if (work0Active && workDetailEl && workDetailEl.style.display !== 'none') {
+            syncWork0SwiperToLang(lang);
+        }
     }
 
     /**
@@ -2284,6 +2326,54 @@
      * 初始化作品 Swiper 輪播
      * @param {number} workId - 作品編號 (1-9)
      */
+    /**
+     * 引言（作品 0）依語系顯示 3（中文）或 4（英文）個 slide；從 DOM 移除/還原第 4 個 slide
+     * @param {string} lang - 'zh' 或 'en'
+     */
+    function ensureWork0SlideCount(lang) {
+        const wrapper = document.querySelector('#workSwiper0 .swiper-wrapper');
+        if (!wrapper) return;
+        const slide4 = wrapper.querySelector('.work0-slide-en-only');
+        if (lang === 'zh') {
+            if (slide4) {
+                if (!window._work0Slide4En) window._work0Slide4En = document.createDocumentFragment();
+                window._work0Slide4En.appendChild(slide4);
+            }
+        } else {
+            if (window._work0Slide4En && window._work0Slide4En.children && window._work0Slide4En.children.length > 0) {
+                wrapper.appendChild(window._work0Slide4En.children[0]);
+            }
+        }
+    }
+
+    /**
+     * 語言切換時，若正在看引言，重新建立 workSwiper0（3 或 4 個 slide）
+     * @param {string} lang - 'zh' 或 'en'
+     */
+    function syncWork0SwiperToLang(lang) {
+        if (window.workSwipers && window.workSwipers[0]) {
+            try {
+                window.workSwipers[0].destroy(true, true);
+                delete window.workSwipers[0];
+            } catch (e) {
+                console.warn('Error destroying work 0 Swiper:', e);
+            }
+        }
+        ensureWork0SlideCount(lang);
+        // 還原第 4 個 slide 後需手動套用該 slide 的翻譯（因還原前不在 DOM 內）
+        if (lang === 'en') {
+            const slide4 = document.querySelector('#workSwiper0 .work0-slide-en-only');
+            const langData = translations.en || translations.zh;
+            if (slide4 && langData) {
+                const imgSpan = slide4.querySelector('[data-i18n="work.0.image4"]');
+                const descP = slide4.querySelector('[data-i18n="work.0.description4"]');
+                if (imgSpan && langData['work.0.image4']) imgSpan.textContent = langData['work.0.image4'];
+                if (descP && langData['work.0.description4']) descP.innerHTML = sanitizeTranslationHtml(langData['work.0.description4']);
+            }
+        }
+        initWorkSwiper(0);
+    }
+
     function initWorkSwiper(workId) {
         // 檢查 Swiper 是否已載入
         if (typeof Swiper === 'undefined') {
@@ -2303,6 +2393,11 @@
 
         if (!swiperElement) {
             return; // 該作品沒有 Swiper
+        }
+
+        // 引言（作品 0）：中文 3 個 slide、英文 4 個 slide
+        if (workId === 0) {
+            ensureWork0SlideCount(currentLang);
         }
 
         // 如果已經初始化，先銷毀
