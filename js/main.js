@@ -2365,8 +2365,10 @@
             const slide4 = document.querySelector('#workSwiper0 .work0-slide-en-only');
             const langData = translations.en || translations.zh;
             if (slide4 && langData) {
+                const titleEl = slide4.querySelector('[data-i18n="work.0.title"]');
                 const imgSpan = slide4.querySelector('[data-i18n="work.0.image4"]');
                 const descP = slide4.querySelector('[data-i18n="work.0.description4"]');
+                if (titleEl && langData['work.0.title']) titleEl.textContent = langData['work.0.title'];
                 if (imgSpan && langData['work.0.image4']) imgSpan.textContent = langData['work.0.image4'];
                 if (descP && langData['work.0.description4']) descP.innerHTML = sanitizeTranslationHtml(langData['work.0.description4']);
             }
