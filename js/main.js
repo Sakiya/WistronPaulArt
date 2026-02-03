@@ -441,6 +441,21 @@
             }
         });
 
+        // 處理帶有 data-i18n-href 屬性的連結（語言切換時更新 href，如滿意度調查）
+        const linkElements = document.querySelectorAll('[data-i18n-href]');
+        linkElements.forEach(function (element) {
+            try {
+                const hrefConfig = JSON.parse(element.getAttribute('data-i18n-href'));
+                if (hrefConfig && hrefConfig[lang]) {
+                    element.href = hrefConfig[lang];
+                } else if (hrefConfig && hrefConfig['zh']) {
+                    element.href = hrefConfig['zh'];
+                }
+            } catch (e) {
+                console.warn('無法解析 data-i18n-href 屬性:', element, e);
+            }
+        });
+
         // 更新 Structured Data (JSON-LD)
         updateStructuredData(lang);
 
