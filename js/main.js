@@ -22,7 +22,7 @@
      */
     const workSyncConfig = {
         // 作品 1：3 個節點（3 個 slides）
-        // 音檔總時長：中文約 2:00，英文約 2:54
+        // 音檔總時長：中文約 2:00，英文約 2:40（160秒）
         1: {
             zh: [
                 { time: 0, slideIndex: 0 },
@@ -31,13 +31,13 @@
             ],
             en: [
                 { time: 0, slideIndex: 0 },
-                { time: 60, slideIndex: 1 },
-                { time: 120, slideIndex: 2 }
+                { time: 80, slideIndex: 1 },
+                { time: 160, slideIndex: 2 }
             ]
         },
 
         // 作品 2：5 個節點（5 個 slides）
-        // 音檔總時長：中文約 4:00，英文約 4:20
+        // 音檔總時長：中文約 2:31，英文約 3:17（197秒）
         2: {
             zh: [
                 { time: 0, slideIndex: 0 },
@@ -48,15 +48,15 @@
             ],
             en: [
                 { time: 0, slideIndex: 0 },
-                { time: 63, slideIndex: 1 },
-                { time: 102, slideIndex: 2 },
-                { time: 124, slideIndex: 3 },
-                { time: 151, slideIndex: 4 }
+                { time: 82, slideIndex: 1 },
+                { time: 133, slideIndex: 2 },
+                { time: 162, slideIndex: 3 },
+                { time: 197, slideIndex: 4 }
             ]
         },
 
         // 作品 3：3 個節點（3 個 slides）
-        // 音檔總時長：中文約 2:00，英文約 2:10
+        // 音檔總時長：中文約 2:56，英文約 3:56（236秒）
         3: {
             zh: [
                 { time: 0, slideIndex: 0 },
@@ -65,13 +65,13 @@
             ],
             en: [
                 { time: 0, slideIndex: 0 },
-                { time: 144, slideIndex: 1 },
-                { time: 176, slideIndex: 2 }
+                { time: 193, slideIndex: 1 },
+                { time: 236, slideIndex: 2 }
             ]
         },
 
         // 作品 4：3 個節點（3 個 slides）
-        // 音檔總時長：中文約 2:00，英文約 2:10
+        // 音檔總時長：中文約 1:43，英文約 2:14（134秒）
         4: {
             zh: [
                 { time: 0, slideIndex: 0 },
@@ -80,13 +80,13 @@
             ],
             en: [
                 { time: 0, slideIndex: 0 },
-                { time: 80, slideIndex: 1 },
-                { time: 103, slideIndex: 2 }
+                { time: 104, slideIndex: 1 },
+                { time: 134, slideIndex: 2 }
             ]
         },
 
         // 作品 6：5 個節點（5 個 slides）
-        // 音檔總時長：中文約 4:00，英文約 4:20
+        // 音檔總時長：中文約 3:49，英文約 4:01（241秒）
         6: {
             zh: [
                 { time: 0, slideIndex: 0 },
@@ -97,10 +97,10 @@
             ],
             en: [
                 { time: 0, slideIndex: 0 },
-                { time: 58, slideIndex: 1 },
-                { time: 107, slideIndex: 2 },
-                { time: 178, slideIndex: 3 },
-                { time: 229, slideIndex: 4 }
+                { time: 61, slideIndex: 1 },
+                { time: 113, slideIndex: 2 },
+                { time: 187, slideIndex: 3 },
+                { time: 241, slideIndex: 4 }
             ]
         }
         // 作品 5、7、8 不需要同步功能
@@ -849,10 +849,7 @@
         //         或 images/audio/{編號}.mp3（過渡期，暫時使用中文版）
         if (lang === 'en') {
             // 英文版路徑
-            // 未來提供英文版後，取消註解下面這行：
-            // return `images/audio/en/${fileNumber}.mp3`;
-            // 目前英文版尚未提供，暫時使用中文版檔案
-            return `images/audio/zh/${fileNumber}.mp3`; // 暫時使用中文檔案
+            return `images/audio/en/${fileNumber}.mp3`;
         } else {
             // 中文版路徑
             return `images/audio/zh/${fileNumber}.mp3`;
