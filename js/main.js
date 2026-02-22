@@ -21,6 +21,7 @@
      * 注意：時間點為初步估算，可根據實際音檔長度微調
      */
     const workSyncConfig = {
+        // 台灣山脈
         // 作品 1：3 個節點（3 個 slides）
         // 音檔總時長：中文約 2:00，英文約 2:40（160秒）
         1: {
@@ -31,13 +32,14 @@
             ],
             en: [
                 { time: 0, slideIndex: 0 },
-                { time: 80, slideIndex: 1 },
-                { time: 160, slideIndex: 2 }
+                { time: 55, slideIndex: 1 },
+                { time: 110, slideIndex: 2 }
             ]
         },
 
+        // 比西里岸之夢
         // 作品 2：5 個節點（5 個 slides）
-        // 音檔總時長：中文約 2:31，英文約 3:17（197秒）
+        // 音檔總時長：中文約 3:42（222秒），英文約 3:17（197秒）
         2: {
             zh: [
                 { time: 0, slideIndex: 0 },
@@ -48,15 +50,16 @@
             ],
             en: [
                 { time: 0, slideIndex: 0 },
-                { time: 82, slideIndex: 1 },
-                { time: 133, slideIndex: 2 },
-                { time: 162, slideIndex: 3 },
-                { time: 197, slideIndex: 4 }
+                { time: 53, slideIndex: 1 },
+                { time: 89, slideIndex: 2 },
+                { time: 110, slideIndex: 3 },
+                { time: 133, slideIndex: 4 }
             ]
         },
 
+        // 巴黎聖母院、淨化之夜
         // 作品 3：3 個節點（3 個 slides）
-        // 音檔總時長：中文約 2:56，英文約 3:56（236秒）
+        // 音檔總時長：中文約 4:27（267秒），英文約 3:56（236秒）
         3: {
             zh: [
                 { time: 0, slideIndex: 0 },
@@ -65,13 +68,14 @@
             ],
             en: [
                 { time: 0, slideIndex: 0 },
-                { time: 193, slideIndex: 1 },
-                { time: 236, slideIndex: 2 }
+                { time: 127, slideIndex: 1 },
+                { time: 155, slideIndex: 2 }
             ]
         },
 
+        // 百年廟
         // 作品 4：3 個節點（3 個 slides）
-        // 音檔總時長：中文約 1:43，英文約 2:14（134秒）
+        // 音檔總時長：中文約 2:37（157秒），英文約 2:14（134秒）
         4: {
             zh: [
                 { time: 0, slideIndex: 0 },
@@ -80,13 +84,14 @@
             ],
             en: [
                 { time: 0, slideIndex: 0 },
-                { time: 104, slideIndex: 1 },
-                { time: 134, slideIndex: 2 }
+                { time: 69, slideIndex: 1 },
+                { time: 96, slideIndex: 2 }
             ]
         },
 
+        // 銀湖
         // 作品 6：5 個節點（5 個 slides）
-        // 音檔總時長：中文約 3:49，英文約 4:01（241秒）
+        // 音檔總時長：中文約 4:38（278秒），英文約 4:01（241秒）
         6: {
             zh: [
                 { time: 0, slideIndex: 0 },
@@ -97,10 +102,10 @@
             ],
             en: [
                 { time: 0, slideIndex: 0 },
-                { time: 61, slideIndex: 1 },
-                { time: 113, slideIndex: 2 },
-                { time: 187, slideIndex: 3 },
-                { time: 241, slideIndex: 4 }
+                { time: 95, slideIndex: 1 },
+                { time: 155, slideIndex: 2 },
+                { time: 180, slideIndex: 3 },
+                { time: 199, slideIndex: 4 }
             ]
         }
         // 作品 5、7、8 不需要同步功能
