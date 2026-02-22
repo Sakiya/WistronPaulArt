@@ -1351,6 +1351,31 @@
         padding-bottom: 0;
     }
 
+    // 手機版滿意度問卷按鈕（作品 0-8 共用）
+    .workDetailQuestionnaire {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 99;
+        pointer-events: auto !important;
+
+        a {
+            display: block;
+            pointer-events: auto !important;
+
+            img {
+                pointer-events: auto !important;
+                display: block;
+                // width: 40px;
+                // height: auto;
+
+                // @include screen_960 {
+                //     width: 32px;
+                // }
+            }
+        }
+    }
+
     .closeWorkSwiper {
         position: absolute;
         top: 15px;
