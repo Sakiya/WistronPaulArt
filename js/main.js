@@ -378,7 +378,7 @@
             'work.8.image4': 'Paul Chaing Art Center | Plaza, Paul & Henry and Afternoon of the Faun 25-01.',
             'work.8.image5': 'Paul Chaing Art Center | Serenity Ponde',
             'work.8.image6': 'Paul Chaing Art Center | Gallery 2, Serenity Pond and Silver Lake Corridor. Photo by John Tao',
-            'work.8.description1': 'After years of anticipation, it will finally open on March 15. The center is located by the tranquil Pacific, expanded from the old studio of renowned artist Paul Chiang. This masterpiece combining "nature, art, and architecture" was co-designed by architect Lin You-han, who practices in both Taiwan and Germany, and Paul Chiang. Stanley Yen, co-founder of the Paul Chiang Art Center, serves as the director.',
+            'work.8.description1': 'After years of anticipation, the Paul Chiang Art Center officially opened on March 15, 2025. Facing the Pacific Ocean in the harbor village of Jinzun, Taitung, the center is an expansion of the artist’s former studio. Bathed in sunlight and surrounded by breathtaking natural beauty, it reflects Chiang’s vision: during his first meeting with architect Michael Lin, he emphasized that he wanted the space to embrace its natural surroundings, focusing on the broader environment rather than simply serving as a venue for displaying artwork.',
             // Footer
             'footer.organizer': 'Organizer',
             'footer.curator': 'Curator',
