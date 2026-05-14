@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <!-- 讓 open.spotify.com 嵌入有權使用 EME；若主機已送 Permissions-Policy 可能覆寫，仍請客戶於標頭放行 Spotify -->
+    <meta http-equiv="Permissions-Policy" content="encrypted-media=(self &quot;https://open.spotify.com&quot;)">
     <!-- Primary Meta Tags -->
     <title data-i18n="meta.title">spotify</title>
     <meta name="title" data-i18n="meta.title" content="spotify">
@@ -119,6 +121,95 @@
 
         .iframe-api-controls .icon-btn:hover {
             filter: brightness(1.08);
+        }
+
+        .iframe-api-controls .icon-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            filter: none;
+        }
+
+        .iframe-api-fallback-hint {
+            margin: 0.85rem 0 0;
+            padding: 0.65rem 0.75rem;
+            font-size: 0.82rem;
+            line-height: 1.55;
+            color: #ffc9c9;
+            background: rgba(255, 80, 80, 0.12);
+            border: 1px solid rgba(255, 120, 120, 0.35);
+            border-radius: 8px;
+        }
+
+        .iframe-api-fallback-hint a {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .iframe-api-preview-mode-hint {
+            margin: 0.75rem 0 0;
+            padding: 0.55rem 0.75rem;
+            font-size: 0.8rem;
+            line-height: 1.55;
+            color: #fcd9a8;
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: 8px;
+        }
+
+        .iframe-api-player-block {
+            position: relative;
+        }
+
+        .iframe-api-player-block + .iframe-api-player-block {
+            margin-top: 1.75rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .iframe-api-player-header {
+            margin: 0 0 0.75rem;
+        }
+
+        .iframe-api-track-name {
+            margin: 0 0 0.3rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.4;
+        }
+
+        .iframe-api-artist-name {
+            margin: 0 0 0.45rem;
+            font-size: 0.82rem;
+            color: #a7a7a7;
+            line-height: 1.45;
+        }
+
+        .iframe-api-player-title {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        /* 方法二：視覺隱藏 Spotify 官方嵌入（#embed-iframe-api-* 內的 iframe），仍保留於 DOM 供播放與 iFrame API */
+        .iframe-api-spotify-embed-hide {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .iframe-api-player-title code {
+            font-size: 0.8em;
+            color: var(--accent);
+            background: rgba(0, 0, 0, 0.35);
+            padding: 0.1em 0.35em;
+            border-radius: 4px;
         }
 
         .iframe-api-controls .icon-btn.secondary {
@@ -286,8 +377,8 @@
 
     <div class="page">
         <h1 class="page-title">Spotify 嵌入比較</h1>
-        <p class="page-desc">方法一為靜態 iframe；方法二為官方 iFrame API；方法三為 Web API（與 iFrame API
-            不同，用於自訂 UI／metadata）。同一首曲目 ID：<code>6aUtynMsdN5H1afXSCd7we</code></p>
+        <p class="page-desc">方法一為靜態 iframe；方法二為官方 iFrame API（曲目清單由腳本陣列產生，可擴充多首）；方法三為 Web API（與 iFrame API
+            不同，用於自訂 UI／metadata）。方法一目前嵌入曲目 ID：<code>3Oic0krCmH6zKqMjUufvBb</code>。</p>
 
         <!-- ========== 方法一：靜態 iframe（保留原本方式）========== -->
         <section class="panel" aria-labelledby="m1-heading">
@@ -308,11 +399,7 @@
             - frameBorder        例：frameBorder="0"
             - src                嵌入網址；主題／尺寸等以 Spotify「分享 → 嵌入」複製為準
         -->
-            <iframe data-testid="embed-iframe" style="border-radius: 0; max-width: 320px;"
-                src="https://open.spotify.com/embed/track/6aUtynMsdN5H1afXSCd7we?utm_source=generator" width="100%"
-                height="152" frameBorder="0" allowfullscreen=""
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"
-                title="Spotify 嵌入播放器"></iframe>
+            <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/3Oic0krCmH6zKqMjUufvBb?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
         </section>
 
         <!-- ========== 方法二：官方 iFrame API ========== -->
@@ -333,28 +420,19 @@
                 <strong>事件：</strong><code>ready</code>、<code>playback_started</code>、<code>playback_update</code>（含
                 isPaused、position、duration 等）。
                 <code>play()</code> 無使用者操作時可能被瀏覽器擋 autoplay。
+                <br><br>
+                多首並列時，點任一首的播放或當某首開始播放時，會自動<strong>暫停其他首</strong>（同一時間僅一首在播）。
+                <br><br>
+                外層進度條可拖曳／點擊至<strong>整首長度</strong>（<code>catalogTotalMs</code>）並對嵌入呼叫 <code>seek</code>；若實際音訊仍約 30 秒就停，代表 Spotify 仍在<strong>預覽／加密播放未就緒</strong>，請見下方橘色提示並檢查 <code>encrypted-media</code> 與主機政策。
+                <br><br>
+                外層進度條右側總時長會取 <code>Math.max(API 的 duration, catalogTotalMs)</code>。請維護下方腳本內 <code>IFRAME_API_PLAYER_ROWS</code>（每筆 <code>trackId</code>、<code>label</code>、<code>catalogTotalMs</code>；選填 <code>trackName</code>、<code>artistName</code>）。播放器 DOM 由程式依陣列長度自動產生。<code>catalogTotalMs</code> 為 <code>0</code> 時外層總長僅跟 API。
+                <br><br>
+                部署於有 <strong>Content-Security-Policy</strong> 的主機時，請一併放行 <code>https://open.spotify.com</code> 於
+                <code>script-src</code>（或 <code>script-src-elem</code>）與 <code>frame-src</code>，否則官方腳本或嵌入框會被瀏覽器擋下。
             </p>
-            <!-- 此 div 會被 API 替換成實際 embed iframe -->
-            <div id="embed-iframe-api"></div>
-            <div class="iframe-api-controls">
-                <button type="button" id="iframe-api-toggle" class="icon-btn" aria-label="播放" title="播放／暫停">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path id="iframe-api-toggle-path" d="M8 5v14l11-7L8 5z" />
-                    </svg>
-                </button>
-            </div>
-            <div class="iframe-api-progress-wrap">
-                <div class="iframe-api-progress-rail is-disabled" id="iframe-api-progress-rail">
-                    <div class="iframe-api-progress-track" id="iframe-api-progress-track" role="progressbar"
-                        aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0:00 / 0:00">
-                        <div class="iframe-api-progress-fill" id="iframe-api-progress-fill"></div>
-                    </div>
-                    <button type="button" class="iframe-api-progress-thumb" id="iframe-api-progress-thumb"
-                        aria-label="拖曳調整播放位置" title="拖曳或點擊軌道"></button>
-                </div>
-                <div class="iframe-api-progress-times"><span id="iframe-api-progress-pos">0:00</span><span
-                        class="iframe-api-progress-sep"> / </span><span id="iframe-api-progress-dur">0:00</span></div>
-            </div>
+            <p id="iframe-api-fallback-hint" class="iframe-api-fallback-hint" role="status" hidden></p>
+            <p id="iframe-api-preview-mode-hint" class="iframe-api-preview-mode-hint" role="status" hidden></p>
+            <div id="iframe-api-players-mount" class="iframe-api-players-mount"></div>
         </section>
 
         <!-- ========== 方法三：Web API + 預覽（你提供的對照範例，非 iFrame API）========== -->
@@ -388,297 +466,726 @@
         </section>
     </div>
 
-    <!-- 官方 iFrame API：須先定義 onSpotifyIframeApiReady，再載入腳本 -->
+    <!-- 官方 iFrame API：須先定義 onSpotifyIframeApiReady，再以動態 script 載入（可偵測 onerror／CSP） -->
     <script>
         (function () {
-            const DEMO_TRACK_URI = 'spotify:track:6aUtynMsdN5H1afXSCd7we';
+            /**
+             * 客戶播放清單（選用）：填 open.spotify.com/playlist/… 時只建立一個清單嵌入，並略過 IFRAME_API_PLAYER_ROWS。
+             * 展場預設為空字串＝使用下方曲目陣列（多首並列）。
+             */
+            var CLIENT_SPOTIFY_PLAYLIST_URL = '';
 
-            window.onSpotifyIframeApiReady = function (IFrameAPI) {
-                var el = document.getElementById('embed-iframe-api');
+            /**
+             * 方法二：維護此陣列（可擴充多首）。每筆 trackId、label、catalogTotalMs（0＝外層總長完全依 API）。
+             * 選填 trackName、artistName。亦支援單筆 playlistId／playlistUrl（與 trackId 擇一）。
+             */
+            var IFRAME_API_PLAYER_ROWS = [
+                {
+                    trackId: '3Oic0krCmH6zKqMjUufvBb',
+                    label: '曲目一',
+                    catalogTotalMs: (4 * 60 + 23) * 1000,
+                    trackName: '無言歌 第二冊 作品30-1 瞑想',
+                    artistName: 'Felix Mendelssohn、古典鋼琴詩'
+                },
+                {
+                    trackId: '7mafuEQZ2Mq4FFFsTgGHmk',
+                    label: '曲目二',
+                    catalogTotalMs: 179068,
+                    trackName: '無言歌 第一冊 作品19-2 追悔',
+                    artistName: 'Felix Mendelssohn、古典鋼琴詩'
+                }
+            ];
+
+            var IFRAME_API_PLAYERS = [];
+
+            function extractSpotifyPlaylistIdFromUrl(url) {
+                if (!url || typeof url !== 'string') return '';
+                var u = url.trim();
+                if (!u) return '';
+                var mUri = u.match(/^spotify:playlist:([a-zA-Z0-9]+)/i);
+                if (mUri && mUri[1]) return mUri[1];
+                var m = u.match(/playlist\/([a-zA-Z0-9]+)/i);
+                return m && m[1] ? m[1] : '';
+            }
+
+            function getIframeApiPlayerRowsEffective() {
+                var raw = typeof CLIENT_SPOTIFY_PLAYLIST_URL === 'string' ? CLIENT_SPOTIFY_PLAYLIST_URL.trim() : '';
+                var pid = extractSpotifyPlaylistIdFromUrl(raw);
+                if (pid) {
+                    return [
+                        {
+                            playlistId: pid,
+                            label: '客戶播放清單',
+                            catalogTotalMs: 0
+                        }
+                    ];
+                }
+                return IFRAME_API_PLAYER_ROWS;
+            }
+
+            function normalizeIframeApiPlayerRows(rows) {
+                var out = [];
+                for (var i = 0; i < rows.length; i++) {
+                    var r = rows[i];
+                    if (!r) continue;
+                    var tn = typeof r.trackName === 'string' ? r.trackName.trim() : '';
+                    var an = typeof r.artistName === 'string' ? r.artistName.trim() : '';
+                    var pid = String(r.playlistId || '').replace(/^spotify:playlist:/i, '').trim();
+                    var purl = typeof r.playlistUrl === 'string' ? r.playlistUrl.trim() : '';
+                    if (!pid && purl) pid = extractSpotifyPlaylistIdFromUrl(purl);
+                    if (pid) {
+                        var sidPl = String(out.length + 1);
+                        out.push({
+                            sid: sidPl,
+                            embedId: 'embed-iframe-api-' + sidPl,
+                            uri: 'spotify:playlist:' + pid,
+                            catalogTotalMs: typeof r.catalogTotalMs === 'number' ? r.catalogTotalMs : 0,
+                            openUrl: 'https://open.spotify.com/playlist/' + pid,
+                            label: r.label || ('播放清單 ' + sidPl),
+                            trackName: tn,
+                            artistName: an
+                        });
+                        continue;
+                    }
+                    var tid = String(r.trackId || '').replace(/^spotify:track:/i, '');
+                    if (!tid) continue;
+                    var sid = String(out.length + 1);
+                    out.push({
+                        sid: sid,
+                        embedId: 'embed-iframe-api-' + sid,
+                        uri: 'spotify:track:' + tid,
+                        catalogTotalMs: typeof r.catalogTotalMs === 'number' ? r.catalogTotalMs : 0,
+                        openUrl: 'https://open.spotify.com/track/' + tid,
+                        label: r.label || ('曲目 ' + sid),
+                        trackName: tn,
+                        artistName: an
+                    });
+                }
+                return out;
+            }
+
+            function renderIframeApiPlayerMount() {
+                var mount = document.getElementById('iframe-api-players-mount');
+                if (!mount) return;
+                mount.textContent = '';
+                var svgNs = 'http://www.w3.org/2000/svg';
+                for (var j = 0; j < IFRAME_API_PLAYERS.length; j++) {
+                    var p = IFRAME_API_PLAYERS[j];
+                    var sid = p.sid;
+                    var tid =
+                        p.uri.indexOf('spotify:playlist:') === 0
+                            ? p.uri.replace('spotify:playlist:', '')
+                            : p.uri.replace('spotify:track:', '');
+
+                    var block = document.createElement('div');
+                    block.className = 'iframe-api-player-block';
+                    block.setAttribute('data-embed-player', sid);
+
+                    var header = document.createElement('div');
+                    header.className = 'iframe-api-player-header';
+
+                    if (p.trackName) {
+                        var nameEl = document.createElement('div');
+                        nameEl.className = 'iframe-api-track-name';
+                        nameEl.textContent = p.trackName;
+                        header.appendChild(nameEl);
+                    }
+                    if (p.artistName) {
+                        var artistEl = document.createElement('div');
+                        artistEl.className = 'iframe-api-artist-name';
+                        artistEl.textContent = p.artistName;
+                        header.appendChild(artistEl);
+                    }
+
+                    var titleEl = document.createElement('p');
+                    titleEl.className = 'iframe-api-player-title';
+                    var strong = document.createElement('strong');
+                    strong.textContent = p.label;
+                    titleEl.appendChild(strong);
+                    titleEl.appendChild(document.createTextNode(' '));
+                    var codeEl = document.createElement('code');
+                    codeEl.textContent = tid;
+                    titleEl.appendChild(codeEl);
+                    header.appendChild(titleEl);
+
+                    block.appendChild(header);
+
+                    var hideWrap = document.createElement('div');
+                    hideWrap.className = 'iframe-api-spotify-embed-hide';
+                    hideWrap.setAttribute('aria-hidden', 'true');
+                    var embedHost = document.createElement('div');
+                    embedHost.id = p.embedId;
+                    hideWrap.appendChild(embedHost);
+                    block.appendChild(hideWrap);
+
+                    var controls = document.createElement('div');
+                    controls.className = 'iframe-api-controls';
+                    var toggle = document.createElement('button');
+                    toggle.type = 'button';
+                    toggle.id = 'iframe-api-toggle-' + sid;
+                    toggle.className = 'icon-btn';
+                    toggle.setAttribute('aria-label', '播放');
+                    toggle.setAttribute('title', '播放／暫停');
+                    var svg = document.createElementNS(svgNs, 'svg');
+                    svg.setAttribute('viewBox', '0 0 24 24');
+                    svg.setAttribute('aria-hidden', 'true');
+                    var path = document.createElementNS(svgNs, 'path');
+                    path.id = 'iframe-api-toggle-path-' + sid;
+                    path.setAttribute('d', 'M8 5v14l11-7L8 5z');
+                    svg.appendChild(path);
+                    toggle.appendChild(svg);
+                    controls.appendChild(toggle);
+                    block.appendChild(controls);
+
+                    var progWrap = document.createElement('div');
+                    progWrap.className = 'iframe-api-progress-wrap';
+
+                    var rail = document.createElement('div');
+                    rail.className = 'iframe-api-progress-rail is-disabled';
+                    rail.id = 'iframe-api-progress-rail-' + sid;
+
+                    var track = document.createElement('div');
+                    track.className = 'iframe-api-progress-track';
+                    track.id = 'iframe-api-progress-track-' + sid;
+                    track.setAttribute('role', 'progressbar');
+                    track.setAttribute('aria-valuemin', '0');
+                    track.setAttribute('aria-valuemax', '100');
+                    track.setAttribute('aria-valuenow', '0');
+                    track.setAttribute('aria-valuetext', '0:00 / 0:00');
+
+                    var fill = document.createElement('div');
+                    fill.className = 'iframe-api-progress-fill';
+                    fill.id = 'iframe-api-progress-fill-' + sid;
+                    track.appendChild(fill);
+                    rail.appendChild(track);
+
+                    var thumb = document.createElement('button');
+                    thumb.type = 'button';
+                    thumb.className = 'iframe-api-progress-thumb';
+                    thumb.id = 'iframe-api-progress-thumb-' + sid;
+                    thumb.setAttribute('aria-label', '拖曳調整播放位置');
+                    thumb.setAttribute('title', '拖曳或點擊軌道');
+                    rail.appendChild(thumb);
+
+                    progWrap.appendChild(rail);
+
+                    var times = document.createElement('div');
+                    times.className = 'iframe-api-progress-times';
+                    var posSp = document.createElement('span');
+                    posSp.id = 'iframe-api-progress-pos-' + sid;
+                    posSp.textContent = '0:00';
+                    var sep = document.createElement('span');
+                    sep.className = 'iframe-api-progress-sep';
+                    sep.textContent = ' / ';
+                    var durSp = document.createElement('span');
+                    durSp.id = 'iframe-api-progress-dur-' + sid;
+                    durSp.textContent = '0:00';
+                    times.appendChild(posSp);
+                    times.appendChild(sep);
+                    times.appendChild(durSp);
+                    progWrap.appendChild(times);
+
+                    block.appendChild(progWrap);
+                    mount.appendChild(block);
+                }
+            }
+
+            function initIframeApiPlayersFromRows() {
+                IFRAME_API_PLAYERS = normalizeIframeApiPlayerRows(getIframeApiPlayerRowsEffective());
+                renderIframeApiPlayerMount();
+            }
+
+            initIframeApiPlayersFromRows();
+
+            /** 方法二多首：同一時間只允許一首播放（其餘呼叫 pause） */
+            var iframeApiExclusiveRegistry = {};
+
+            function pauseAllIframeApiEmbedsExcept(activeSid) {
+                var keep = String(activeSid);
+                for (var regKey in iframeApiExclusiveRegistry) {
+                    if (!Object.prototype.hasOwnProperty.call(iframeApiExclusiveRegistry, regKey)) continue;
+                    if (regKey === keep) continue;
+                    var ctrlOther = iframeApiExclusiveRegistry[regKey];
+                    if (!ctrlOther) continue;
+                    try {
+                        if (typeof ctrlOther.pause === 'function') ctrlOther.pause();
+                    } catch (errPause) { /* ignore */ }
+                }
+            }
+
+            var iframeApiPreviewHintShown = false;
+            function maybeShowIframeApiPreviewModeHint(apiMs, catMs) {
+                if (iframeApiPreviewHintShown) return;
+                if (!catMs || catMs < 90000) return;
+                if (!apiMs || apiMs <= 0) return;
+                if (apiMs + 12000 >= catMs) return;
+                var hintEl = document.getElementById('iframe-api-preview-mode-hint');
+                if (!hintEl) return;
+                iframeApiPreviewHintShown = true;
+                hintEl.hidden = false;
+                hintEl.textContent =
+                    '偵測到可播長度明顯短於曲目設定的整首時間（常為約 30 秒的預覽）。請確認瀏覽器可播受保護內容、嵌入允許 encrypted-media、主機放行 open.spotify.com；若同一瀏覽器曾在 open.spotify.com 登入過 Spotify，有時較易取得完整加密串流（本頁無登入表單）。詳見 ';
+                var a = document.createElement('a');
+                a.href = 'https://developer.spotify.com/documentation/embeds/tutorials/troubleshooting';
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.style.color = 'var(--accent)';
+                a.textContent = 'Spotify Troubleshooting';
+                hintEl.appendChild(a);
+                hintEl.appendChild(document.createTextNode('。'));
+            }
+
+            const IFRAME_API_SCRIPT = 'https://open.spotify.com/embed/iframe-api/v1';
+            const LOAD_TIMEOUT_MS = 20000;
+
+            var loadTimer = 0;
+            var method2FallbackShown = false;
+
+            function showMethod2Fallback(message) {
+                if (method2FallbackShown) return;
+                method2FallbackShown = true;
+                if (loadTimer) {
+                    clearTimeout(loadTimer);
+                    loadTimer = 0;
+                }
+                var hint = document.getElementById('iframe-api-fallback-hint');
+                for (var pi = 0; pi < IFRAME_API_PLAYERS.length; pi++) {
+                    var d = IFRAME_API_PLAYERS[pi];
+                    var tb = document.getElementById('iframe-api-toggle-' + d.sid);
+                    var rail = document.getElementById('iframe-api-progress-rail-' + d.sid);
+                    if (tb) tb.disabled = true;
+                    if (rail) rail.classList.add('is-disabled');
+                }
+                if (!hint) return;
+                hint.hidden = false;
+                hint.textContent = '';
+                var span = document.createElement('span');
+                span.textContent = (message || 'Spotify iFrame API 無法使用。') + ' ';
+                hint.appendChild(span);
+                for (var li = 0; li < IFRAME_API_PLAYERS.length; li++) {
+                    var def = IFRAME_API_PLAYERS[li];
+                    if (li > 0) hint.appendChild(document.createTextNode(' · '));
+                    var a = document.createElement('a');
+                    a.href = def.openUrl;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.textContent = (def.label || '曲目') + '（Spotify）';
+                    hint.appendChild(a);
+                }
+            }
+
+            document.addEventListener('securitypolicyviolation', function (ev) {
+                var blocked = (ev.blockedURI || '') + (ev.violatedDirective || '');
+                if (blocked.indexOf('spotify') === -1) return;
+                var dir = ev.effectiveDirective || ev.violatedDirective || '';
+                showMethod2Fallback(
+                    '此頁的 CSP 已阻擋 Spotify（' + dir + '）。請於白名單加入 https://open.spotify.com（含 script 與 frame 相關指令）。'
+                );
+            });
+
+            function attachOneEmbedController(IFrameAPI, def) {
+                var el = document.getElementById(def.embedId);
                 if (!el) return;
 
-                IFrameAPI.createController(el, {
-                    width: '100%',
-                    height: '152',
-                    uri: DEMO_TRACK_URI
-                }, function (EmbedController) {
-                    window.__spotifyEmbedController = EmbedController;
+                var sid = def.sid;
+                var catalogTotalMs = typeof def.catalogTotalMs === 'number' ? def.catalogTotalMs : 0;
 
-                    var toggleBtn = document.getElementById('iframe-api-toggle');
-                    var togglePath = document.getElementById('iframe-api-toggle-path');
-                    var ICON_PLAY_D = 'M8 5v14l11-7L8 5z';
-                    var ICON_PAUSE_D = 'M6 19h4V5H6v14zm8-14v14h4V5h-4z';
-
-                    function setIframeToggleIcon(isPaused) {
-                        if (!togglePath || !toggleBtn) return;
-                        togglePath.setAttribute('d', isPaused ? ICON_PLAY_D : ICON_PAUSE_D);
-                        toggleBtn.setAttribute('aria-label', isPaused ? '播放' : '暫停');
-                        toggleBtn.setAttribute('title', isPaused ? '播放' : '暫停');
-                    }
-
-                    var progressFill = document.getElementById('iframe-api-progress-fill');
-                    var progressTrack = document.getElementById('iframe-api-progress-track');
-                    var progressPos = document.getElementById('iframe-api-progress-pos');
-                    var progressDur = document.getElementById('iframe-api-progress-dur');
-                    var progressRail = document.getElementById('iframe-api-progress-rail');
-                    var progressThumb = document.getElementById('iframe-api-progress-thumb');
-
-                    var lastDurationMs = 0;
-                    var lastPositionMs = 0;
-                    var isScrubbing = false;
-                    var scrubPreviewMs = 0;
-                    var progressSyncAt = 0;
-                    var progressPlaying = false;
-                    var lastPlaybackPaused = true;
-                    var progressRafId = 0;
-                    var seekSettleUntil = 0;
-                    var seekSettleMs = 0;
-                    var seekSettleTimer = 0;
-
-                    function clearSeekSettle() {
-                        seekSettleUntil = 0;
-                        if (seekSettleTimer) {
-                            clearTimeout(seekSettleTimer);
-                            seekSettleTimer = 0;
+                try {
+                    IFrameAPI.createController(el, {
+                        width: '100%',
+                        height: '352',
+                        uri: def.uri
+                    }, function (EmbedController) {
+                        if (!EmbedController) {
+                            showMethod2Fallback('iFrame API 未建立 EmbedController。');
+                            return;
                         }
-                    }
 
-                    function stopProgressExtrapolation() {
-                        if (progressRafId) {
-                            cancelAnimationFrame(progressRafId);
-                            progressRafId = 0;
-                        }
-                    }
+                        iframeApiExclusiveRegistry[String(sid)] = EmbedController;
 
-                    function scheduleProgressExtrapolation() {
-                        stopProgressExtrapolation();
-                        var nowTs = typeof performance !== 'undefined' ? performance.now() : Date.now();
-                        if (!progressPlaying || isScrubbing || lastDurationMs <= 0 || nowTs < seekSettleUntil) return;
-                        function frame() {
-                            var ts = typeof performance !== 'undefined' ? performance.now() : Date.now();
-                            if (!progressPlaying || isScrubbing || lastDurationMs <= 0 || ts < seekSettleUntil) {
-                                progressRafId = 0;
-                                return;
+                        var SPOTIFY_IFRAME_ALLOW = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+
+                        function patchSpotifyEmbedIframeAllow(hostEl) {
+                            if (!hostEl) return;
+                            var list = [];
+                            if (hostEl.tagName === 'IFRAME') list.push(hostEl);
+                            var nested = hostEl.querySelectorAll && hostEl.querySelectorAll('iframe');
+                            if (nested) {
+                                for (var i = 0; i < nested.length; i++) list.push(nested[i]);
                             }
-                            var elapsed = performance.now() - progressSyncAt;
-                            var extrapolated = Math.min(lastDurationMs, lastPositionMs + elapsed);
-                            setProgressVisual(extrapolated, lastDurationMs);
+                            for (var j = 0; j < list.length; j++) {
+                                var iframe = list[j];
+                                var src = (iframe.getAttribute('src') || '') + (iframe.getAttribute('data-src') || '');
+                                if (src.indexOf('spotify') === -1) continue;
+                                var cur = iframe.getAttribute('allow') || '';
+                                if (cur.indexOf('encrypted-media') !== -1) continue;
+                                iframe.setAttribute('allow', SPOTIFY_IFRAME_ALLOW);
+                            }
+                        }
+
+                        patchSpotifyEmbedIframeAllow(el);
+                        if (typeof MutationObserver !== 'undefined') {
+                            var allowPatchObserver = new MutationObserver(function () {
+                                patchSpotifyEmbedIframeAllow(el);
+                            });
+                            allowPatchObserver.observe(el, {
+                                childList: true,
+                                subtree: true,
+                                attributes: true,
+                                attributeFilter: ['src', 'allow']
+                            });
+                        }
+
+                        var toggleBtn = document.getElementById('iframe-api-toggle-' + sid);
+                        var togglePath = document.getElementById('iframe-api-toggle-path-' + sid);
+                        var ICON_PLAY_D = 'M8 5v14l11-7L8 5z';
+                        var ICON_PAUSE_D = 'M6 19h4V5H6v14zm8-14v14h4V5h-4z';
+
+                        function setIframeToggleIcon(isPaused) {
+                            if (!togglePath || !toggleBtn) return;
+                            togglePath.setAttribute('d', isPaused ? ICON_PLAY_D : ICON_PAUSE_D);
+                            toggleBtn.setAttribute('aria-label', isPaused ? '播放' : '暫停');
+                            toggleBtn.setAttribute('title', isPaused ? '播放' : '暫停');
+                        }
+
+                        var progressFill = document.getElementById('iframe-api-progress-fill-' + sid);
+                        var progressTrack = document.getElementById('iframe-api-progress-track-' + sid);
+                        var progressPos = document.getElementById('iframe-api-progress-pos-' + sid);
+                        var progressDur = document.getElementById('iframe-api-progress-dur-' + sid);
+                        var progressRail = document.getElementById('iframe-api-progress-rail-' + sid);
+                        var progressThumb = document.getElementById('iframe-api-progress-thumb-' + sid);
+
+                        var lastApiDurationMs = 0;
+                        var lastPositionMs = 0;
+                        var isScrubbing = false;
+                        var scrubPreviewMs = 0;
+                        var progressSyncAt = 0;
+                        var progressPlaying = false;
+                        var lastPlaybackPaused = true;
+                        var progressRafId = 0;
+                        var seekSettleUntil = 0;
+                        var seekSettleMs = 0;
+                        var seekSettleTimer = 0;
+
+                        function getUiDurationMs() {
+                            var api = lastApiDurationMs > 0 ? lastApiDurationMs : 0;
+                            if (catalogTotalMs > 0) {
+                                return Math.max(api, catalogTotalMs);
+                            }
+                            return api;
+                        }
+
+                        function clearSeekSettle() {
+                            seekSettleUntil = 0;
+                            if (seekSettleTimer) {
+                                clearTimeout(seekSettleTimer);
+                                seekSettleTimer = 0;
+                            }
+                        }
+
+                        function stopProgressExtrapolation() {
+                            if (progressRafId) {
+                                cancelAnimationFrame(progressRafId);
+                                progressRafId = 0;
+                            }
+                        }
+
+                        function scheduleProgressExtrapolation() {
+                            stopProgressExtrapolation();
+                            var nowTs = typeof performance !== 'undefined' ? performance.now() : Date.now();
+                            if (!progressPlaying || isScrubbing || lastApiDurationMs <= 0 || nowTs < seekSettleUntil) return;
+                            function frame() {
+                                var ts = typeof performance !== 'undefined' ? performance.now() : Date.now();
+                                if (!progressPlaying || isScrubbing || lastApiDurationMs <= 0 || ts < seekSettleUntil) {
+                                    progressRafId = 0;
+                                    return;
+                                }
+                                var elapsed = performance.now() - progressSyncAt;
+                                var extrapolated = Math.min(lastApiDurationMs, lastPositionMs + elapsed);
+                                setProgressVisual(extrapolated);
+                                progressRafId = requestAnimationFrame(frame);
+                            }
                             progressRafId = requestAnimationFrame(frame);
                         }
-                        progressRafId = requestAnimationFrame(frame);
-                    }
 
-                    function getDisplayedPositionMs() {
-                        if (lastDurationMs <= 0) return 0;
-                        if (!progressPlaying || isScrubbing) return lastPositionMs;
-                        var elapsed = performance.now() - progressSyncAt;
-                        return Math.min(lastDurationMs, lastPositionMs + elapsed);
-                    }
-
-                    document.addEventListener('visibilitychange', function onVis() {
-                        if (document.hidden) stopProgressExtrapolation();
-                        else {
-                            var ts = typeof performance !== 'undefined' ? performance.now() : Date.now();
-                            if (progressPlaying && !isScrubbing && lastDurationMs > 0 && ts >= seekSettleUntil) {
-                                scheduleProgressExtrapolation();
+                        function getDisplayedPositionMs() {
+                            if (lastApiDurationMs <= 0 && getUiDurationMs() <= 0) return 0;
+                            if (!progressPlaying || isScrubbing) {
+                                return Math.min(lastPositionMs, getUiDurationMs());
                             }
+                            var elapsed = performance.now() - progressSyncAt;
+                            var raw = lastPositionMs + elapsed;
+                            return Math.min(raw, lastApiDurationMs, getUiDurationMs());
                         }
-                    });
-                    function formatMsAsTime(ms) {
-                        if (ms == null || isNaN(ms) || ms < 0) return '0:00';
-                        var totalSec = Math.floor(ms / 1000);
-                        var m = Math.floor(totalSec / 60);
-                        var s = totalSec % 60;
-                        return m + ':' + (s < 10 ? '0' : '') + s;
-                    }
 
-                    function setScrubbingUiEnabled(enabled) {
-                        if (!progressRail) return;
-                        progressRail.classList.toggle('is-disabled', !enabled);
-                    }
-
-                    function setProgressVisual(positionMs, durationMs) {
-                        if (!progressFill || !progressPos || !progressDur) return;
-                        var dur = typeof durationMs === 'number' && durationMs > 0 ? durationMs : lastDurationMs;
-                        var pos = dur > 0 ? Math.max(0, Math.min(positionMs, dur)) : 0;
-                        var pct = dur > 0 ? Math.min(100, (pos / dur) * 100) : 0;
-                        progressFill.style.width = pct + '%';
-                        if (progressThumb) progressThumb.style.left = pct + '%';
-                        progressPos.textContent = formatMsAsTime(pos);
-                        progressDur.textContent = formatMsAsTime(dur);
-                        if (progressTrack) {
-                            progressTrack.setAttribute('aria-valuenow', String(Math.round(pct)));
-                            progressTrack.setAttribute('aria-valuetext', formatMsAsTime(pos) + ' / ' + formatMsAsTime(dur));
-                        }
-                    }
-
-                    function updateIframeApiProgress(data) {
-                        if (!progressFill || !progressPos || !progressDur || isScrubbing) return;
-                        var pos = data && typeof data.position === 'number' ? data.position : 0;
-                        var dur = data && typeof data.duration === 'number' ? data.duration : 0;
-                        if (dur > 0) lastDurationMs = dur;
-                        lastPositionMs = pos;
-                        progressSyncAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
-                        setProgressVisual(pos, dur > 0 ? dur : lastDurationMs);
-                        setScrubbingUiEnabled(lastDurationMs > 0);
-                    }
-
-                    function getClampedRatio(clientX) {
-                        if (!progressRail) return 0;
-                        var rect = progressRail.getBoundingClientRect();
-                        if (rect.width <= 0) return 0;
-                        var x = clientX - rect.left;
-                        return Math.max(0, Math.min(1, x / rect.width));
-                    }
-
-                    function applyScrubClientX(clientX) {
-                        if (lastDurationMs <= 0) return;
-                        scrubPreviewMs = Math.round(getClampedRatio(clientX) * lastDurationMs);
-                        setProgressVisual(scrubPreviewMs, lastDurationMs);
-                    }
-
-                    function endScrub() {
-                        if (!isScrubbing) return;
-                        isScrubbing = false;
-                        if (progressRail) progressRail.classList.remove('is-scrubbing');
-                        stopProgressExtrapolation();
-
-                        seekSettleMs = scrubPreviewMs;
-                        seekSettleUntil = (typeof performance !== 'undefined' ? performance.now() : Date.now()) + 2000;
-                        if (seekSettleTimer) clearTimeout(seekSettleTimer);
-                        seekSettleTimer = setTimeout(function () {
-                            seekSettleTimer = 0;
-                            seekSettleUntil = 0;
-                            if (progressPlaying && !isScrubbing && lastDurationMs > 0) {
-                                progressSyncAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
-                                scheduleProgressExtrapolation();
-                            }
-                        }, 2100);
-
-                        lastPositionMs = scrubPreviewMs;
-                        progressSyncAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
-                        setProgressVisual(scrubPreviewMs, lastDurationMs);
-
-                        if (lastDurationMs > 0) {
-                            var nearStartMs = 800;
-                            var atStart = scrubPreviewMs <= nearStartMs;
-                            try {
-                                if (atStart && typeof EmbedController.restart === 'function') {
-                                    EmbedController.restart();
-                                } else if (typeof EmbedController.seek === 'function') {
-                                    EmbedController.seek(Math.max(0, Math.floor(scrubPreviewMs / 1000)));
+                        document.addEventListener('visibilitychange', function onVis() {
+                            if (document.hidden) stopProgressExtrapolation();
+                            else {
+                                var ts = typeof performance !== 'undefined' ? performance.now() : Date.now();
+                                if (progressPlaying && !isScrubbing && lastApiDurationMs > 0 && ts >= seekSettleUntil) {
+                                    scheduleProgressExtrapolation();
                                 }
-                            } catch (err) {
-                                console.warn('[iFrame API] seek/restart', err);
+                            }
+                        });
+
+                        function formatMsAsTime(ms) {
+                            if (ms == null || isNaN(ms) || ms < 0) return '0:00';
+                            var totalSec = Math.floor(ms / 1000);
+                            var m = Math.floor(totalSec / 60);
+                            var s = totalSec % 60;
+                            return m + ':' + (s < 10 ? '0' : '') + s;
+                        }
+
+                        function setScrubbingUiEnabled(enabled) {
+                            if (!progressRail) return;
+                            progressRail.classList.toggle('is-disabled', !enabled);
+                        }
+
+                        function setProgressVisual(positionMs) {
+                            if (!progressFill || !progressPos || !progressDur) return;
+                            var durUi = getUiDurationMs();
+                            if (durUi <= 0) {
+                                progressFill.style.width = '0%';
+                                if (progressThumb) progressThumb.style.left = '0%';
+                                progressPos.textContent = '0:00';
+                                progressDur.textContent = '0:00';
+                                if (progressTrack) {
+                                    progressTrack.setAttribute('aria-valuenow', '0');
+                                    progressTrack.setAttribute('aria-valuetext', '0:00 / 0:00');
+                                }
+                                return;
+                            }
+                            var pos = Math.max(0, Math.min(positionMs, durUi));
+                            var pct = Math.min(100, (pos / durUi) * 100);
+                            progressFill.style.width = pct + '%';
+                            if (progressThumb) progressThumb.style.left = pct + '%';
+                            progressPos.textContent = formatMsAsTime(pos);
+                            progressDur.textContent = formatMsAsTime(durUi);
+                            if (progressTrack) {
+                                progressTrack.setAttribute('aria-valuenow', String(Math.round(pct)));
+                                progressTrack.setAttribute('aria-valuetext', formatMsAsTime(pos) + ' / ' + formatMsAsTime(durUi));
                             }
                         }
-                    }
 
-                    if (progressRail && progressThumb) {
-                        progressRail.addEventListener('pointerdown', function (ev) {
-                            if (lastDurationMs <= 0) return;
-                            if (ev.pointerType === 'mouse' && ev.button !== 0) return;
-                            scrubPreviewMs = getDisplayedPositionMs();
-                            isScrubbing = true;
+                        function updateIframeApiProgress(data) {
+                            if (!progressFill || !progressPos || !progressDur || isScrubbing) return;
+                            var pos = data && typeof data.position === 'number' ? data.position : 0;
+                            var dur = data && typeof data.duration === 'number' ? data.duration : 0;
+                            if (dur > 0) lastApiDurationMs = Math.max(lastApiDurationMs, dur);
+                            lastPositionMs = pos;
+                            progressSyncAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
+                            setProgressVisual(pos);
+                            setScrubbingUiEnabled(getUiDurationMs() > 0 && (lastApiDurationMs > 0 || catalogTotalMs > 0));
+                        }
+
+                        function getClampedRatio(clientX) {
+                            if (!progressRail) return 0;
+                            var rect = progressRail.getBoundingClientRect();
+                            if (rect.width <= 0) return 0;
+                            var x = clientX - rect.left;
+                            return Math.max(0, Math.min(1, x / rect.width));
+                        }
+
+                        function applyScrubClientX(clientX) {
+                            var durUi = getUiDurationMs();
+                            if (durUi <= 0) return;
+                            scrubPreviewMs = Math.round(getClampedRatio(clientX) * durUi);
+                            setProgressVisual(scrubPreviewMs);
+                        }
+
+                        function endScrub() {
+                            if (!isScrubbing) return;
+                            isScrubbing = false;
+                            if (progressRail) progressRail.classList.remove('is-scrubbing');
                             stopProgressExtrapolation();
-                            progressRail.classList.add('is-scrubbing');
-                            try {
-                                progressRail.setPointerCapture(ev.pointerId);
-                            } catch (e) { /* ignore */ }
-                            applyScrubClientX(ev.clientX);
-                        });
-                        progressRail.addEventListener('pointermove', function (ev) {
-                            if (!isScrubbing) return;
-                            applyScrubClientX(ev.clientX);
-                        });
-                        progressRail.addEventListener('pointerup', function (ev) {
-                            if (!isScrubbing) return;
-                            endScrub();
-                            try {
-                                progressRail.releasePointerCapture(ev.pointerId);
-                            } catch (e) { /* ignore */ }
-                        });
-                        progressRail.addEventListener('pointercancel', function (ev) {
-                            if (!isScrubbing) return;
-                            endScrub();
-                            try {
-                                progressRail.releasePointerCapture(ev.pointerId);
-                            } catch (e) { /* ignore */ }
-                        });
-                    }
 
-                    EmbedController.addListener('ready', function () {
-                        console.log('[iFrame API] ready');
-                        setIframeToggleIcon(true);
-                        clearSeekSettle();
-                        stopProgressExtrapolation();
-                        progressPlaying = false;
-                        lastPlaybackPaused = true;
-                        lastDurationMs = 0;
-                        lastPositionMs = 0;
-                        updateIframeApiProgress({ position: 0, duration: 0 });
-                        setScrubbingUiEnabled(false);
-                    });
-                    EmbedController.addListener('playback_started', function (e) {
-                        console.log('[iFrame API] playback_started', e.data && e.data.playingURI);
-                    });
-                    EmbedController.addListener('playback_update', function (e) {
-                        if (!e.data) return;
-                        console.log('[iFrame API] playback_update', 'paused:', e.data.isPaused, 'pos ms:', e.data.position);
-                        setIframeToggleIcon(e.data.isPaused);
-                        lastPlaybackPaused = !!e.data.isPaused;
-                        var buffering = !!e.data.isBuffering;
-                        progressPlaying = !lastPlaybackPaused && !buffering;
-
-                        var nowTs = typeof performance !== 'undefined' ? performance.now() : Date.now();
-                        if (seekSettleUntil > 0 && nowTs >= seekSettleUntil) {
-                            clearSeekSettle();
-                        }
-
-                        if (isScrubbing) {
-                            if (typeof e.data.duration === 'number' && e.data.duration > 0) {
-                                lastDurationMs = e.data.duration;
-                            }
-                            return;
-                        }
-
-                        if (typeof e.data.duration === 'number' && e.data.duration > 0) {
-                            lastDurationMs = e.data.duration;
-                        }
-
-                        var reportedPos = typeof e.data.position === 'number' ? e.data.position : lastPositionMs;
-                        var settleActive = seekSettleUntil > nowTs;
-
-                        if (settleActive) {
-                            var drift = Math.abs(reportedPos - seekSettleMs);
-                            var okDrift = Math.max(900, Math.min(2200, lastDurationMs * 0.05));
-                            if (drift <= okDrift) {
+                            var capUi = getUiDurationMs();
+                            seekSettleMs = Math.round(Math.min(Math.max(0, scrubPreviewMs), capUi));
+                            var beyondApi = lastApiDurationMs > 0 && seekSettleMs > lastApiDurationMs + 500;
+                            if (beyondApi) {
                                 clearSeekSettle();
-                                lastPositionMs = reportedPos;
-                                progressSyncAt = nowTs;
-                                updateIframeApiProgress(e.data);
-                                if (progressPlaying) scheduleProgressExtrapolation();
-                                else stopProgressExtrapolation();
+                                seekSettleUntil = 0;
                             } else {
-                                setProgressVisual(seekSettleMs, lastDurationMs);
-                                stopProgressExtrapolation();
+                                seekSettleUntil = (typeof performance !== 'undefined' ? performance.now() : Date.now()) + 2000;
+                                if (seekSettleTimer) clearTimeout(seekSettleTimer);
+                                seekSettleTimer = setTimeout(function () {
+                                    seekSettleTimer = 0;
+                                    seekSettleUntil = 0;
+                                    if (progressPlaying && !isScrubbing && lastApiDurationMs > 0) {
+                                        progressSyncAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
+                                        scheduleProgressExtrapolation();
+                                    }
+                                }, 2100);
                             }
-                            return;
+
+                            lastPositionMs = seekSettleMs;
+                            progressSyncAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
+                            setProgressVisual(seekSettleMs);
+
+                            if (lastApiDurationMs > 0 || catalogTotalMs > 0) {
+                                var nearStartMs = 800;
+                                var atStart = seekSettleMs <= nearStartMs;
+                                try {
+                                    if (atStart && typeof EmbedController.restart === 'function') {
+                                        EmbedController.restart();
+                                    } else if (typeof EmbedController.seek === 'function') {
+                                        EmbedController.seek(Math.max(0, Math.floor(seekSettleMs / 1000)));
+                                    }
+                                } catch (err) {
+                                    console.warn('[iFrame API] seek/restart', err);
+                                }
+                            }
                         }
 
-                        lastPositionMs = reportedPos;
-                        progressSyncAt = nowTs;
-                        updateIframeApiProgress(e.data);
-                        if (progressPlaying) scheduleProgressExtrapolation();
-                        else stopProgressExtrapolation();
-                    });
+                        if (progressRail && progressThumb) {
+                            progressRail.addEventListener('pointerdown', function (ev) {
+                                if (getUiDurationMs() <= 0) return;
+                                if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+                                scrubPreviewMs = getDisplayedPositionMs();
+                                isScrubbing = true;
+                                stopProgressExtrapolation();
+                                progressRail.classList.add('is-scrubbing');
+                                try {
+                                    progressRail.setPointerCapture(ev.pointerId);
+                                } catch (e) { /* ignore */ }
+                                applyScrubClientX(ev.clientX);
+                            });
+                            progressRail.addEventListener('pointermove', function (ev) {
+                                if (!isScrubbing) return;
+                                applyScrubClientX(ev.clientX);
+                            });
+                            progressRail.addEventListener('pointerup', function (ev) {
+                                if (!isScrubbing) return;
+                                endScrub();
+                                try {
+                                    progressRail.releasePointerCapture(ev.pointerId);
+                                } catch (e) { /* ignore */ }
+                            });
+                            progressRail.addEventListener('pointercancel', function (ev) {
+                                if (!isScrubbing) return;
+                                endScrub();
+                                try {
+                                    progressRail.releasePointerCapture(ev.pointerId);
+                                } catch (e) { /* ignore */ }
+                            });
+                        }
 
-                    if (toggleBtn) toggleBtn.addEventListener('click', function () { EmbedController.togglePlay(); });
-                });
+                        EmbedController.addListener('ready', function () {
+                            console.log('[iFrame API] ready', def.label || sid);
+                            patchSpotifyEmbedIframeAllow(el);
+                            setTimeout(function () { patchSpotifyEmbedIframeAllow(el); }, 400);
+                            setTimeout(function () { patchSpotifyEmbedIframeAllow(el); }, 2000);
+                            setIframeToggleIcon(true);
+                            clearSeekSettle();
+                            stopProgressExtrapolation();
+                            progressPlaying = false;
+                            lastPlaybackPaused = true;
+                            lastApiDurationMs = 0;
+                            lastPositionMs = 0;
+                            updateIframeApiProgress({ position: 0, duration: 0 });
+                        });
+                        EmbedController.addListener('playback_started', function (e) {
+                            console.log('[iFrame API] playback_started', def.label || sid, e.data && e.data.playingURI);
+                            pauseAllIframeApiEmbedsExcept(sid);
+                        });
+                        EmbedController.addListener('playback_update', function (e) {
+                            if (!e.data) return;
+                            console.log('[iFrame API] playback_update', def.label || sid, 'paused:', e.data.isPaused, 'pos ms:', e.data.position);
+                            setIframeToggleIcon(e.data.isPaused);
+                            lastPlaybackPaused = !!e.data.isPaused;
+                            var buffering = !!e.data.isBuffering;
+                            progressPlaying = !lastPlaybackPaused && !buffering;
+
+                            var nowTs = typeof performance !== 'undefined' ? performance.now() : Date.now();
+                            if (seekSettleUntil > 0 && nowTs >= seekSettleUntil) {
+                                clearSeekSettle();
+                            }
+
+                            if (isScrubbing) {
+                                if (typeof e.data.duration === 'number' && e.data.duration > 0) {
+                                    lastApiDurationMs = Math.max(lastApiDurationMs, e.data.duration);
+                                }
+                                maybeShowIframeApiPreviewModeHint(lastApiDurationMs, catalogTotalMs);
+                                return;
+                            }
+
+                            if (typeof e.data.duration === 'number' && e.data.duration > 0) {
+                                lastApiDurationMs = Math.max(lastApiDurationMs, e.data.duration);
+                            }
+
+                            var reportedPos = typeof e.data.position === 'number' ? e.data.position : lastPositionMs;
+                            var settleActive = seekSettleUntil > nowTs;
+
+                            if (settleActive) {
+                                var drift = Math.abs(reportedPos - seekSettleMs);
+                                var okDrift = Math.max(900, Math.min(2200, lastApiDurationMs * 0.05));
+                                if (drift <= okDrift) {
+                                    clearSeekSettle();
+                                    lastPositionMs = reportedPos;
+                                    progressSyncAt = nowTs;
+                                    updateIframeApiProgress(e.data);
+                                    if (progressPlaying) scheduleProgressExtrapolation();
+                                    else stopProgressExtrapolation();
+                                } else {
+                                    if (lastApiDurationMs > 0 && seekSettleMs > lastApiDurationMs + 800) {
+                                        clearSeekSettle();
+                                        lastPositionMs = reportedPos;
+                                        progressSyncAt = nowTs;
+                                        updateIframeApiProgress(e.data);
+                                    } else {
+                                        setProgressVisual(seekSettleMs);
+                                    }
+                                    stopProgressExtrapolation();
+                                }
+                                maybeShowIframeApiPreviewModeHint(lastApiDurationMs, catalogTotalMs);
+                                return;
+                            }
+
+                            lastPositionMs = reportedPos;
+                            progressSyncAt = nowTs;
+                            updateIframeApiProgress(e.data);
+                            if (progressPlaying) scheduleProgressExtrapolation();
+                            else stopProgressExtrapolation();
+                            maybeShowIframeApiPreviewModeHint(lastApiDurationMs, catalogTotalMs);
+                        });
+
+                        if (toggleBtn) toggleBtn.addEventListener('click', function () {
+                            pauseAllIframeApiEmbedsExcept(sid);
+                            EmbedController.togglePlay();
+                        });
+                    });
+                } catch (err) {
+                    showMethod2Fallback('createController 失敗：' + (err && err.message ? err.message : String(err)));
+                }
+            }
+
+            window.onSpotifyIframeApiReady = function (IFrameAPI) {
+                if (method2FallbackShown) return;
+                window.__spotifyIframeApiHandshakeDone = true;
+                if (loadTimer) {
+                    clearTimeout(loadTimer);
+                    loadTimer = 0;
+                }
+                for (var ix = 0; ix < IFRAME_API_PLAYERS.length; ix++) {
+                    attachOneEmbedController(IFrameAPI, IFRAME_API_PLAYERS[ix]);
+                }
             };
+
+            loadTimer = setTimeout(function () {
+                if (method2FallbackShown) return;
+                if (window.__spotifyIframeApiHandshakeDone) return;
+                showMethod2Fallback('等待 Spotify iFrame API 逾時（腳本未載入或未執行，常見原因為 CSP 擋下 script-src）。');
+            }, LOAD_TIMEOUT_MS);
+
+            var apiScript = document.createElement('script');
+            apiScript.src = IFRAME_API_SCRIPT;
+            apiScript.async = true;
+            apiScript.onerror = function () {
+                showMethod2Fallback('無法載入官方 iFrame API 腳本（' + IFRAME_API_SCRIPT + '）。多為 CSP 的 script-src 未放行 open.spotify.com。');
+            };
+            document.head.appendChild(apiScript);
         })();
     </script>
-    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 
     <!-- Web API：對照用（勿在正式環境暴露 Secret） -->
     <script>
@@ -760,7 +1267,7 @@
                 return;
             }
 
-            displayTrack('6aUtynMsdN5H1afXSCd7we').catch(function (err) {
+            displayTrack('3Oic0krCmH6zKqMjUufvBb').catch(function (err) {
                 if (statusEl) {
                     statusEl.innerText = 'Web API 錯誤（常見為 CORS 或憑證）：' + (err && err.message ? err.message : String(err));
                 }
